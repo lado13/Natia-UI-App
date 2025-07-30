@@ -13,12 +13,10 @@ export class ChannelServiceService {
 
   constructor(private http: HttpClient) {}
 
-  // Observable ვერსია (არსებული)
   getData(): Observable<ChannelApiResponse> {
     return this.http.get<ChannelApiResponse>(this.apiUrl + 'GetDataForUI');
   }
 
-  // Async/Await ვერსია
   async getDataAsync(): Promise<ChannelApiResponse> {
     try {
       return await firstValueFrom(
