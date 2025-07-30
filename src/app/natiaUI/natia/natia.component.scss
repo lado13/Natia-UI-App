@@ -1,0 +1,157 @@
+.channel-text-title {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+    text-shadow: 0 0 6px rgba(0, 123, 255, 0.4);
+}
+
+.channel-pill {
+    padding: 0.6rem 0.75rem;
+    font-size: 0.9rem;
+    border-radius: 8px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+    transition: transform 0.2s ease;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+.channel-pill:hover {
+    transform: scale(1.05);
+}
+
+.channel-name {
+    display: inline-block;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Responsive for mobile */
+@media (max-width: 576px) {
+    .channel-pill {
+        white-space: normal;
+        text-overflow: unset;
+        font-size: 0.85rem;
+        padding: 0.5rem;
+    }
+
+    .channel-name {
+        white-space: normal;
+        word-break: break-word;
+    }
+}
+
+/* 🔴 Pulse animation for error */
+@keyframes pulseRed {
+    0% {
+        box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.7);
+    }
+
+    70% {
+        box-shadow: 0 0 0 12px rgba(220, 53, 69, 0);
+    }
+
+    100% {
+        box-shadow: 0 0 0 0 rgba(220, 53, 69, 0);
+    }
+}
+
+.pulse-error {
+    animation: pulseRed 1.5s infinite;
+    border: 2px solid #dc3545;
+}
+
+
+.channel-text-title {
+    margin-top: 160px;
+}
+
+.pulse {
+    animation: pulseAnimation 1.5s ease-in-out infinite;
+}
+
+@keyframes pulseAnimation {
+    0% {
+        box-shadow: 0 0 0 0 rgba(255, 0, 0, 0.6);
+    }
+
+    70% {
+        box-shadow: 0 0 0 15px rgba(255, 0, 0, 0);
+    }
+
+    100% {
+        box-shadow: 0 0 0 0 rgba(255, 0, 0, 0);
+    }
+}
+
+.satellite-card {
+    background: linear-gradient(145deg, #1d1d1d, #2c2c2c);
+    border-radius: 16px;
+    box-shadow: 0 0 20px rgba(0, 255, 255, 0.15);
+    transition: transform 0.3s ease;
+    padding: 12px;
+}
+
+.satellite-card:hover {
+    transform: translateY(-5px);
+}
+
+.card-header {
+    font-size: 18px;
+    background-color: #00bcd4;
+    padding: 10px 0;
+    border-radius: 16px 16px 0 0;
+    font-weight: 600;
+    text-shadow: 0 0 4px rgba(255, 255, 255, 0.5);
+}
+
+.sat-detail-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    gap: 10px;
+    margin-bottom: 12px;
+    justify-items: center;
+    border: 1px solid #ffffff;
+    width: auto;
+}
+
+.glow-title {
+    text-shadow: 0 0 5px #0ff, 0 0 10px #0ff;
+}
+
+.glow-icon {
+    text-shadow: 0 0 3px #0ff;
+}
+
+@keyframes redPulse {
+    0% {
+        background-color: #dc3545;
+        box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.7);
+    }
+
+    70% {
+        box-shadow: 0 0 0 10px rgba(220, 53, 69, 0);
+    }
+
+    100% {
+        box-shadow: 0 0 0 0 rgba(220, 53, 69, 0);
+    }
+}
+
+.error {
+    background-color: #dc3545 !important;
+    animation: redPulse 1.5s infinite;
+    border-radius: 8px;
+    color: white;
+}
+
+.temperature-info-container {
+    float: inline-start;
+}
+
+.satellite-container {
+    background-color: #184055;
+    border: none;
+}

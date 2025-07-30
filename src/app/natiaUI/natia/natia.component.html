@@ -1,0 +1,78 @@
+<div class="container-fluid py-4">
+  <!-- 🌡️ Temperature Info -->
+  <div *ngIf="temperatureInfo" class="text-center mb-4 temperature-info-container p-5">
+    <h2 class="text-light mb-4 display-6 fw-semibold glow-title">🌡️ Temp Info</h2>
+    <div class="d-flex justify-content-center gap-3 flex-wrap">
+      <span class="badge text-dark fs-5 p-3" [ngClass]="{
+        'bg-danger text-white pulse': isHot,
+        'bg-warning': !isHot
+      }" title="Temperature status">
+        🌡️ Temperature: {{ temperatureInfo.temperature }} °C
+      </span>
+      <span class="badge bg-info text-dark fs-5 p-3" title="Humidity level">
+        💧 Humidity: {{ temperatureInfo.humidity }} %
+      </span>
+    </div>
+  </div>
+
+  <!-- Temperature loading placeholder -->
+  <div *ngIf="!temperatureInfo" class="text-center text-light mt-5">
+    ⏳ Loading temperature info...
+  </div>
+
+  <!-- 📺 Channel List -->
+  <div class="text-center mb-5">
+    <h2 class="text-light mb-4 display-6 fw-semibold glow-title channel-text-title">
+      📺 Channels
+    </h2>
+    <div *ngIf="channels.length === 0" class="text-center text-light mt-5">
+      ⏳ Loading channels...
+    </div>
+    <div *ngIf="channels.length > 0" class="container-fluid p-5">
+      <div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-lg-6 g-3 justify-content-center">
+        <div class="col" *ngFor="let ch of channels; trackBy: trackByOrder">
+          <div class="badge w-100 text-center channel-pill" [ngClass]="{
+            'bg-danger text-white pulse-error': ch.HaveError,
+            'bg-secondary text-light opacity-50': ch.IsDIsable && !ch.HaveError,
+            'bg-success text-white': !ch.IsDIsable && !ch.HaveError
+          }" title="{{ ch.HaveError ? 'Channel has an error' : ch.IsDIsable ? 'Channel is disabled' : 'Channel is active' }}">
+            <span class="channel-name">
+              {{ ch.Order }}. {{ ch.ChanellName }} {{ ch.status ? '(' + ch.status + ')' : '' }}
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <hr class="my-4 border-light" />
+
+  <!-- 📡 Satellite Overview -->
+  <div class="text-center container-fluid p-5">
+    <h2 class="text-light mb-4 display-6 fw-semibold glow-title">📡 Satellite</h2>
+    <div *ngIf="satellites.length === 0" class="text-center text-light mt-5">
+      ⏳ Loading satellites...
+    </div>
+    <div *ngIf="satellites.length > 0" class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4 justify-content-center">
+      <div class="col" *ngFor="let sat of satellites; trackBy: trackByDegree">
+        <div class="card satellite-card h-100 text-white border-0 position-relative overflow-hidden">
+          <div class="card-header bg-warning text-dark text-center fs-5 fw-bold" title="Satellite orbital position">
+            <span class="glow-icon">🛰️</span> {{ sat.Degree }}
+          </div>
+          <div class="card-body d-flex flex-column justify-content-center">
+            <div *ngFor="let d of sat.details" class="sat-detail-row satellite-container p-3 d-flex flex-wrap gap-2 justify-content-center mb-2" [ngClass]="{ 'error': d.HaveError }" title="{{ d.HaveError ? 'Transponder has an error' : 'Transponder is operational' }}">
+              <span class="badge bg-primary" title="Transponder frequency">Freq: {{ d.Frequency }}</span>
+              <span class="badge bg-success" title="Symbol rate">Rate: {{ d.SymbolRate }}</span>
+              <span class="badge bg-warning text-dark" title="Polarization">Pol: {{ d.Polarisation }}</span>
+              <span class="badge bg-info text-dark" title="Port number">Port: {{ d.PortIn250 }}</span>
+              <span class="badge bg-secondary" title="Modulation Error Ratio">MER: {{ d.mer || 'N/A' }}</span>
+            </div>
+            <div *ngIf="sat.details.length === 0" class="text-center text-light p-2">
+              No transponder details available
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

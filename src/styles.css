@@ -1,7 +1,7 @@
 body {
-  background-image: url('../src/assets/svg/liveBackground.svg');
+  background-image: url("../src/assets/svg/liveBackground.svg");
   background-size: cover;
   background-repeat: no-repeat;
   background-position: left;
   min-height: 100vh;
-}
+}/*# sourceMappingURL=styles.css.map */
