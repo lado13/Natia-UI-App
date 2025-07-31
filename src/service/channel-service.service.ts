@@ -23,7 +23,7 @@ export class ChannelServiceService {
         this.http.get<ChannelApiResponse>(this.apiUrl + 'GetDataForUI')
       );
     } catch (error) {
-      console.error('GetDataForUI შეცდომა:', error);
+      console.error('GetDataForUI:', error);
       throw error;
     }
   }

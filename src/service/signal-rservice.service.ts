@@ -14,6 +14,9 @@ export class SignalRService {
   private temperatureSource = new BehaviorSubject<any>(null);
   temperature$ = this.temperatureSource.asObservable();
 
+  private robotAudioSource = new BehaviorSubject<string | null>(null);
+  robotAudio$ = this.robotAudioSource.asObservable();
+
   private channelStatusSource = new BehaviorSubject<any[]>([]);
   channelStatus$ = this.channelStatusSource.asObservable();
 
@@ -53,11 +56,28 @@ export class SignalRService {
   }
 
   private registerListeners(): void {
+    // 🌡️ Temperature
     this.hubConnection.on('temperatureUpdate', (data) => {
       console.log('%c🌡️ temperatureUpdate:', 'color: green;', JSON.stringify(data, null, 2));
       this.temperatureSource.next(data);
     });
 
+
+    // 🤖 robotsay
+    this.hubConnection.on('robotsay', (data) => {
+      console.log('%c🤖 robotsay:', 'color: green;', data);
+
+      if (typeof data === 'string') {
+        this.robotAudioSource.next(data);
+      } else if (data && data.robotSay) {
+        this.robotAudioSource.next(data.robotSay);
+      } else {
+        console.warn('⚠️ robotsay received but unknown format:', data);
+      }
+    });
+
+
+    // 📡 Channel Status
     this.hubConnection.on('channelStatusUpdate', (data) => {
       console.log('%c📡 channelStatusUpdate:', 'color: green;', JSON.stringify(data, null, 2));
       if (data && data.names && typeof data.names === 'object') {
@@ -72,6 +92,7 @@ export class SignalRService {
       }
     });
 
+    // 📺 Channel Info
     this.hubConnection.on('chanellInfoUpdate', (data: any[]) => {
       console.log('%c📡 chanellInfoUpdate:', 'color: cyan;', JSON.stringify(data, null, 2));
       if (Array.isArray(data) && data.length > 0) {
@@ -79,7 +100,7 @@ export class SignalRService {
           Order: item.order,
           ChanellName: item.chanellName,
           HaveError: item.haveError,
-          IsDIsable: item.isDisable,
+          IsDIsable: item.isDIsable,
           status: item.status
         }));
         console.log('%c📡 Mapped chanellInfoUpdate:', 'color: cyan;', JSON.stringify(mappedData, null, 2));
@@ -88,6 +109,8 @@ export class SignalRService {
         console.warn('⚠️ Invalid or empty chanellInfoUpdate data, skipping:', data);
       }
     });
+
+    // 🛰️ Satellite Monitoring
     this.hubConnection.on('satelliteMonitoringUpdate', (data: any[]) => {
       console.log('%c🛰️ satelliteMonitoringUpdate:', 'color: blue;', JSON.stringify(data, null, 2));
       if (Array.isArray(data) && data.length > 0) {

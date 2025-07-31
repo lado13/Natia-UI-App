@@ -18,6 +18,7 @@ export class NatiaComponent implements OnInit {
   channels: TVChannel[] = [];
   satellites: Satellite[] = [];
   temperatureInfo!: TemperatureInfo;
+  robotSpeech: string | null = null; // ✅ added
 
   constructor(
     private channelService: ChannelServiceService,
@@ -39,8 +40,7 @@ export class NatiaComponent implements OnInit {
         const data = await firstValueFrom(this.channelService.getData());
         console.log('📊 Raw API response:', JSON.stringify(data, null, 2));
 
-        // Handle channels
-        let rawChannels = data.ChanellInfo || data.ChanellInfo || data.ChanellInfo || [];
+        let rawChannels = data.ChanellInfo || [];
         if (!Array.isArray(rawChannels)) {
           console.warn('⚠️ API channels data is not an array:', rawChannels);
           rawChannels = [];
@@ -49,12 +49,11 @@ export class NatiaComponent implements OnInit {
           Order: item.order || item.Order,
           ChanellName: item.chanellName || item.ChanellName,
           HaveError: item.haveError !== undefined ? item.haveError : item.HaveError || false,
-          IsDIsable: item.isDisable !== undefined ? item.isDisable : item.IsDisable || false,
+          IsDIsable: item.isDIsable !== undefined ? item.isDIsable : item.IsDIsable || false,
           status: item.status || item.Status
         }));
 
-        // Handle satellites
-        let rawSatellites = data.SatelliteView || data.SatelliteView || data.SatelliteView || [];
+        let rawSatellites = data.SatelliteView || [];
         if (!Array.isArray(rawSatellites)) {
           console.warn('⚠️ API satellites data is not an array:', rawSatellites);
           rawSatellites = [];
@@ -71,7 +70,7 @@ export class NatiaComponent implements OnInit {
           }))
         }));
 
-        this.temperatureInfo = data.TemperatureInfo || data.TemperatureInfo || {};
+        this.temperatureInfo = data.TemperatureInfo || {};
         console.log('📺 Channels after mapping:', JSON.stringify(this.channels, null, 2));
         console.log('🛰️ Satellites after mapping:', JSON.stringify(this.satellites, null, 2));
         console.log('🌡️ Temperature after mapping:', JSON.stringify(this.temperatureInfo, null, 2));
@@ -106,17 +105,6 @@ export class NatiaComponent implements OnInit {
           }
         });
 
-        this.signalRService.channelStatus$.subscribe(data => {
-          if (data && Array.isArray(data)) {
-            console.log('📡 Channel status update received:', JSON.stringify(data, null, 2));
-            this.updateChannelStatuses(data);
-            this.cdr.detectChanges();
-            console.log('🔁 UI updated with channel statuses, channels:', JSON.stringify(this.channels, null, 2));
-          } else {
-            console.warn('⚠️ Invalid channelStatus data:', data);
-          }
-        });
-
         this.signalRService.chanellInfo$.subscribe(data => {
           if (data && Array.isArray(data) && data.length > 0) {
             console.log('%c📡 Channel info update received:', 'color: cyan;', JSON.stringify(data, null, 2));
@@ -138,6 +126,36 @@ export class NatiaComponent implements OnInit {
             console.warn('⚠️ Invalid or empty satellite data, skipping:', data);
           }
         });
+
+
+
+
+        let robotTimeout: any; 
+
+        this.signalRService.robotAudio$.subscribe(msg => {
+          if (msg) {
+            console.log('🤖 Robot says:', msg);
+            this.robotSpeech = msg;
+            this.cdr.detectChanges();
+            clearTimeout(robotTimeout);
+            robotTimeout = setTimeout(() => {
+              console.log('🕛 robotSpeech cleared after 10 seconds of no new messages');
+              this.robotSpeech = null;
+              this.cdr.detectChanges();
+            }, 10000);
+          }
+        });
+
+
+
+        // // ✅ 🤖 robotsay update
+        // this.signalRService.robotAudio$.subscribe(msg => {
+        //   if (msg) {
+        //     console.log('🤖 Robot says:', msg);
+        //     this.robotSpeech = msg;
+        //     this.cdr.detectChanges();
+        //   }
+        // });
       });
     } catch (error) {
       console.error('❌ SignalR initialization error:', error);
@@ -160,7 +178,7 @@ export class NatiaComponent implements OnInit {
       const status = statusData.find(s => s.id === channel.Order);
       if (status) {
         console.log(`🔄 Updating channel ${channel.Order} status to ${status.status}`);
-        return { ...channel,  };
+        return { ...channel /* add updated status logic if needed */ };
       }
       return channel;
     });
