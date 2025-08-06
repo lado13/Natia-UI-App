@@ -1,8 +1,6 @@
-@charset "UTF-8";
 .channel-text-title {
-  font-size: 2rem;
-  margin-bottom: 1rem;
   text-shadow: 0 0 6px rgba(0, 123, 255, 0.4);
+  margin-top: 83px !important;
 }
 
 .channel-pill {
@@ -15,6 +13,11 @@
   max-width: 100%;
   transition: transform 0.2s ease;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+  width: 260px;
+}
+
+.chanells-container {
+  margin-top: 58px;
 }
 
 .channel-pill:hover {
@@ -29,7 +32,6 @@
   white-space: nowrap;
 }
 
-/* Responsive for mobile */
 @media (max-width: 576px) {
   .channel-pill {
     white-space: normal;
@@ -42,7 +44,6 @@
     word-break: break-word;
   }
 }
-/* 🔴 Pulse animation for error */
 @keyframes pulseRed {
   0% {
     box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.7);
@@ -84,6 +85,11 @@
   box-shadow: 0 0 20px rgba(0, 255, 255, 0.15);
   transition: transform 0.3s ease;
   padding: 12px;
+  width: 194px;
+}
+
+.satellite-box {
+  width: 200px;
 }
 
 .satellite-card:hover {
@@ -137,18 +143,32 @@
 
 .temperature-info-container {
   float: inline-start;
+  margin-left: 105px;
 }
 
 .satellite-container {
-  background-color: #184055;
   border: none;
+  margin: 0;
 }
 
 .custom-gray {
   background-color: #808080 !important;
-  /* Standard gray, overrides Bootstrap */
   color: #f8f9fa;
-  /* Light text for contrast */
   opacity: 0.7;
-  /* Matches previous styling */
+}
+
+.robot-container {
+  position: absolute;
+  left: 50%;
+  top: -50;
+  transform: translateX(-50%);
+  z-index: 999;
+}
+
+.line {
+  border: none;
+}
+
+.underline {
+  margin-bottom: 100px;
 }/*# sourceMappingURL=natia.component.css.map */

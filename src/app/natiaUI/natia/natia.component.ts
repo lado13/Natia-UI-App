@@ -6,6 +6,7 @@ import { Satellite } from '../../../model/satellite';
 import { TemperatureInfo } from '../../../model/temperature-info';
 import { TVChannel } from '../../../model/tvchannel';
 import { firstValueFrom } from 'rxjs';
+import { ThemeServiceService } from '../../../service/theme-service.service';
 
 @Component({
   selector: 'app-natia',
@@ -24,7 +25,8 @@ export class NatiaComponent implements OnInit {
     private channelService: ChannelServiceService,
     private signalRService: SignalRService,
     private cdr: ChangeDetectorRef,
-    private ngZone: NgZone
+    private ngZone: NgZone,
+    private themeService: ThemeServiceService
   ) { }
 
   async ngOnInit(): Promise<void> {
@@ -32,7 +34,15 @@ export class NatiaComponent implements OnInit {
     await this.loadDataWithRetry();
     await this.initSignalR();
     console.log('🚀 NatiaComponent ngOnInit completed');
+
+    this.themeService.applyAutoTheme();
+
+    // Recheck every hour (or you can reduce this to every minute if needed)
+    setInterval(() => {
+      this.themeService.applyAutoTheme();
+    }, 60 * 60 * 1000); // every hour
   }
+
 
   async loadDataWithRetry(retries = 3, delay = 2000): Promise<void> {
     for (let attempt = 1; attempt <= retries; attempt++) {
@@ -130,8 +140,9 @@ export class NatiaComponent implements OnInit {
 
 
 
-        let robotTimeout: any; 
+        let robotTimeout: any;
 
+        // ✅ 🤖 robotsay update
         this.signalRService.robotAudio$.subscribe(msg => {
           if (msg) {
             console.log('🤖 Robot says:', msg);
@@ -146,16 +157,6 @@ export class NatiaComponent implements OnInit {
           }
         });
 
-
-
-        // // ✅ 🤖 robotsay update
-        // this.signalRService.robotAudio$.subscribe(msg => {
-        //   if (msg) {
-        //     console.log('🤖 Robot says:', msg);
-        //     this.robotSpeech = msg;
-        //     this.cdr.detectChanges();
-        //   }
-        // });
       });
     } catch (error) {
       console.error('❌ SignalR initialization error:', error);
@@ -178,7 +179,7 @@ export class NatiaComponent implements OnInit {
       const status = statusData.find(s => s.id === channel.Order);
       if (status) {
         console.log(`🔄 Updating channel ${channel.Order} status to ${status.status}`);
-        return { ...channel /* add updated status logic if needed */ };
+        return { ...channel };
       }
       return channel;
     });
