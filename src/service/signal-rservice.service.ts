@@ -8,6 +8,7 @@ import { Satellite } from '../model/satellite';
 import { OpticChannelProblem } from '../model/optic-channel-problem';
 import { CardInfoToActivate } from '../model/card-info-to-activate';
 import { RegionRelay } from '../model/region-relay';
+import { DiscoMessage } from '../model/disco-message';
 
 @Injectable({
   providedIn: 'root'
@@ -15,6 +16,8 @@ import { RegionRelay } from '../model/region-relay';
 export class SignalRService {
   private hubConnection!: signalR.HubConnection;
 
+
+  // Use a BehaviorSubject to create a stream
   private temperatureSource = new BehaviorSubject<any>(null);
   temperature$ = this.temperatureSource.asObservable();
 
@@ -39,7 +42,11 @@ export class SignalRService {
   private regionRelaySource = new BehaviorSubject<RegionRelay[]>([]);
   regionRelay$ = this.regionRelaySource.asObservable();
 
+  private discoAnimationSource = new BehaviorSubject<DiscoMessage | null>(null);
+  discoAnimation$ = this.discoAnimationSource.asObservable();
 
+
+  //signaler connection start
   public async startConnection(): Promise<void> {
     this.hubConnection = new signalR.HubConnectionBuilder()
       .withUrl(environment.signalRHubUrl)
@@ -70,16 +77,35 @@ export class SignalRService {
   }
 
   private registerListeners(): void {
+
     // 🌡️ Temperature
     this.hubConnection.on('temperatureUpdate', (data) => {
-      console.log('%c🌡️ temperatureUpdate:', 'color: green;', JSON.stringify(data, null, 2));
+      // console.log('%c🌡️ temperatureUpdate:', 'color: green;', JSON.stringify(data, null, 2));
       this.temperatureSource.next(data);
     });
 
 
+    //disco animate 
+    this.hubConnection.on('StartAnimate', (data: any) => {
+
+      console.log(data,"service>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+      
+      if (data && data.sender && data.message) {
+        const message: DiscoMessage = {
+          // sender: data.sender,
+          message: data.message
+        };
+
+        this.discoAnimationSource.next(message);
+
+      } else {
+        console.warn('⚠️ Invalid disco animation data:', data);
+      }
+    });
+
     // 🤖 robotsay
     this.hubConnection.on('robotsay', (data) => {
-      console.log('%c🤖 robotsay:', 'color: green;', data);
+      // console.log('%c🤖 robotsay:', 'color: green;', data);
 
       if (typeof data === 'string') {
         this.robotAudioSource.next(data);
@@ -91,15 +117,16 @@ export class SignalRService {
     });
 
 
+
     // 📡 Channel Status
     this.hubConnection.on('channelStatusUpdate', (data) => {
-      console.log('%c📡 channelStatusUpdate:', 'color: green;', JSON.stringify(data, null, 2));
+      // console.log('%c📡 channelStatusUpdate:', 'color: green;', JSON.stringify(data, null, 2));
       if (data && data.names && typeof data.names === 'object') {
         const statusArray = Object.entries(data.names).map(([id, name]) => ({
           id: parseInt(id),
           status: name
         }));
-        console.log('%c📡 Converted channelStatusUpdate:', 'color: green;', JSON.stringify(statusArray, null, 2));
+        // console.log('%c📡 Converted channelStatusUpdate:', 'color: green;', JSON.stringify(statusArray, null, 2));
         this.channelStatusSource.next(statusArray);
       } else {
         console.warn('⚠️ Invalid channelStatusUpdate data, skipping:', data);
@@ -108,7 +135,7 @@ export class SignalRService {
 
     // 📺 Channel Info
     this.hubConnection.on('chanellInfoUpdate', (data: any[]) => {
-      console.log('%c📡 chanellInfoUpdate:', 'color: cyan;', JSON.stringify(data, null, 2));
+      // console.log('%c📡 chanellInfoUpdate:', 'color: cyan;', JSON.stringify(data, null, 2));
       if (Array.isArray(data) && data.length > 0) {
         const mappedData: TVChannel[] = data.map(item => ({
           Order: item.order,
@@ -117,7 +144,7 @@ export class SignalRService {
           IsDIsable: item.isDIsable,
           status: item.status
         }));
-        console.log('%c📡 Mapped chanellInfoUpdate:', 'color: cyan;', JSON.stringify(mappedData, null, 2));
+        // console.log('%c📡 Mapped chanellInfoUpdate:', 'color: cyan;', JSON.stringify(mappedData, null, 2));
         this.chanellInfoSource.next(mappedData);
       } else {
         console.warn('⚠️ Invalid or empty chanellInfoUpdate data, skipping:', data);
@@ -125,8 +152,9 @@ export class SignalRService {
     });
 
 
+    //satellite
     this.hubConnection.on('satelliteMonitoringUpdate', (data: any[]) => {
-      console.log('🛰️ satelliteMonitoringUpdate:', data);
+      // console.log('🛰️ satelliteMonitoringUpdate:', data);
       if (Array.isArray(data) && data.length > 0) {
         const mappedData: Satellite[] = data.map(item => ({
           Degree: item.degree ?? item.Degree,
@@ -148,6 +176,7 @@ export class SignalRService {
 
 
 
+    //channel how have problem
     this.hubConnection.on('OpticChannelHealthUpdate', (data: any) => {
       const updates: OpticChannelProblem[] = data.opticChanellsWhichHaveProblem || [];
 
@@ -161,6 +190,7 @@ export class SignalRService {
 
 
 
+    //card witch need activate
     this.hubConnection.on('CardsWhichNeedToBeActivate', (data: any) => {
       const updates: CardInfoToActivate[] = data.cardsInfoThathNeedToBeActivated || [];
 
@@ -194,8 +224,9 @@ export class SignalRService {
 
 
 
+    //region relay bitrate 
     this.hubConnection.on('regionbitrateupdate', (data: any) => {
-      console.log('[SignalR] GetRegionMergGrouped received:', data);
+      // console.log('[SignalR] GetRegionMergGrouped received:', data);
 
       const updates: RegionRelay[] = Array.isArray(data) ? data : [];
 
@@ -208,6 +239,8 @@ export class SignalRService {
       console.log('[SignalR] Updating BehaviorSubject with new region relays.');
       this.regionRelaySource.next(updates.map(u => ({ ...u })));
     });
+
+
 
 
   }

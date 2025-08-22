@@ -15,6 +15,7 @@ import { ThemeServiceService } from '../../../service/theme-service.service';
 import { OpticChannelProblem } from '../../../model/optic-channel-problem';
 import { CardInfoToActivate } from '../../../model/card-info-to-activate';
 import { RegionRelay } from '../../../model/region-relay';
+import { DiscoMessage } from '../../../model/disco-message';
 
 @Component({
   selector: 'app-natia',
@@ -27,10 +28,13 @@ export class NatiaComponent implements OnInit {
   channels: TVChannel[] = [];
   satellites: Satellite[] = [];
   temperatureInfo!: TemperatureInfo;
-  robotSpeech: string | null = null; // ✅ added
   opticChannels$!: Observable<OpticChannelProblem[]>;
   cards$!: Observable<CardInfoToActivate[]>;
   regionRelays: RegionRelay[] = [];
+  robotSpeech: string | null = null;
+  currentMessage: DiscoMessage | null = null;
+  currentAnimation: string | null = null;
+
 
 
 
@@ -50,7 +54,10 @@ export class NatiaComponent implements OnInit {
     console.log('🚀 NatiaComponent ngOnInit completed');
 
 
+    //channels with problem
     this.opticChannels$ = this.signalRService.opticChannelProblem$;
+
+    //card activate
     this.cards$ = this.signalRService.cardInfo$;
 
 
@@ -64,11 +71,14 @@ export class NatiaComponent implements OnInit {
   }
 
 
+  //default load api
   async loadDataWithRetry(retries = 3, delay = 2000): Promise<void> {
+
     for (let attempt = 1; attempt <= retries; attempt++) {
       try {
+        //channels
         const data = await firstValueFrom(this.channelService.getData());
-        console.log('📊 Raw API response:', JSON.stringify(data, null, 2));
+        // console.log('📊 Raw API response:', JSON.stringify(data, null, 2));
 
         let rawChannels = data.ChanellInfo || [];
         if (!Array.isArray(rawChannels)) {
@@ -83,6 +93,7 @@ export class NatiaComponent implements OnInit {
           status: item.status || item.Status
         }));
 
+        //satellite
         let rawSatellites = data.SatelliteView || [];
         if (!Array.isArray(rawSatellites)) {
           console.warn('⚠️ API satellites data is not an array:', rawSatellites);
@@ -101,10 +112,11 @@ export class NatiaComponent implements OnInit {
           }))
         }));
 
+        //temperature
         this.temperatureInfo = data.TemperatureInfo || {};
-        console.log('📺 Channels after mapping:', JSON.stringify(this.channels, null, 2));
-        console.log('🛰️ Satellites after mapping:', JSON.stringify(this.satellites, null, 2));
-        console.log('🌡️ Temperature after mapping:', JSON.stringify(this.temperatureInfo, null, 2));
+        // console.log('📺 Channels after mapping:', JSON.stringify(this.channels, null, 2));
+        // console.log('🛰️ Satellites after mapping:', JSON.stringify(this.satellites, null, 2));
+        // console.log('🌡️ Temperature after mapping:', JSON.stringify(this.temperatureInfo, null, 2));
         this.cdr.detectChanges();
         return;
       } catch (error) {
@@ -121,46 +133,105 @@ export class NatiaComponent implements OnInit {
     this.cdr.detectChanges();
   }
 
+
+  //signaler
   async initSignalR(): Promise<void> {
     try {
       await this.signalRService.startConnection();
       console.log('📡 SignalR subscriptions initializing');
 
       this.ngZone.run(() => {
+
+
+
+        let discoTimeout: any;
+   
+        // Disco animation
+        this.signalRService.discoAnimation$.subscribe(msg => {
+          console.log('New disco message:', msg);
+
+          if (msg?.message) {
+            this.currentMessage = msg;
+            this.setAnimation(msg.message);
+            this.cdr.detectChanges();
+
+            clearTimeout(discoTimeout);
+            discoTimeout = setTimeout(() => {
+              console.log('🕛 Disco cleared after 10 seconds');
+              this.currentMessage = null;
+              this.currentAnimation = null;
+              this.cdr.detectChanges();
+            }, 30000);
+          } else {
+            // If null/invalid message
+            this.currentMessage = null;
+            this.currentAnimation = null;
+            clearTimeout(discoTimeout);
+            this.cdr.detectChanges();
+          }
+        });
+
+
+
+        let robotTimeout: any;
+        // ✅ 🤖 robotsay update
+        this.signalRService.robotAudio$.subscribe(msg => {
+          if (msg) {
+            // console.log('🤖 Robot says:', msg);
+            this.robotSpeech = msg;
+            this.cdr.detectChanges();
+            clearTimeout(robotTimeout);
+            robotTimeout = setTimeout(() => {
+              console.log('🕛 robotSpeech cleared after 10 seconds of no new messages');
+              this.robotSpeech = null;
+              this.cdr.detectChanges();
+            }, 10000);
+          }
+        });
+
+
+
+
+        //temperature
         this.signalRService.temperature$.subscribe(data => {
           if (data) {
-            console.log('🌡️ Temperature update received:', JSON.stringify(data, null, 2));
+            // console.log('🌡️ Temperature update received:', JSON.stringify(data, null, 2));
             this.temperatureInfo = { ...data };
             this.cdr.detectChanges();
             console.log('🔁 UI updated with temperature');
           }
         });
 
+
+
+        //chanell
         this.signalRService.chanellInfo$.subscribe(data => {
           if (data && Array.isArray(data) && data.length > 0) {
-            console.log('%c📡 Channel info update received:', 'color: cyan;', JSON.stringify(data, null, 2));
+            // console.log('%c📡 Channel info update received:', 'color: cyan;', JSON.stringify(data, null, 2));
             this.updateChannelsWithError(data);
             this.cdr.detectChanges();
-            console.log('🔁 UI updated with channel info, channels:', JSON.stringify(this.channels, null, 2));
+            // console.log('🔁 UI updated with channel info, channels:', JSON.stringify(this.channels, null, 2));
           } else {
             console.warn('⚠️ Invalid or empty chanellInfo data, skipping:', data);
           }
         });
 
+        //satellite
         this.signalRService.satellite$.subscribe(data => {
           if (data && Array.isArray(data) && data.length > 0) {
-            console.log('%c🛰️ Satellite update received:', 'color: blue;', JSON.stringify(data, null, 2));
+            // console.log('%c🛰️ Satellite update received:', 'color: blue;', JSON.stringify(data, null, 2));
             this.satellites = [...data];
             this.cdr.detectChanges();
-            console.log('🔁 UI updated with satellites, satellites:', JSON.stringify(this.satellites, null, 2));
+            // console.log('🔁 UI updated with satellites, satellites:', JSON.stringify(this.satellites, null, 2));
           } else {
             console.warn('⚠️ Invalid or empty satellite data, skipping:', data);
           }
         });
 
+        //region relay 
         this.signalRService.regionRelay$.subscribe(data => {
           if (data && Array.isArray(data) && data.length > 0) {
-            console.log('%c🛰️ RegionRelay update received:', 'color: green;', JSON.stringify(data, null, 2));
+            // console.log('%c🛰️ RegionRelay update received:', 'color: green;', JSON.stringify(data, null, 2));
             this.regionRelays = [...data];
             this.cdr.detectChanges();
 
@@ -173,22 +244,6 @@ export class NatiaComponent implements OnInit {
 
 
 
-        let robotTimeout: any;
-
-        // ✅ 🤖 robotsay update
-        this.signalRService.robotAudio$.subscribe(msg => {
-          if (msg) {
-            console.log('🤖 Robot says:', msg);
-            this.robotSpeech = msg;
-            this.cdr.detectChanges();
-            clearTimeout(robotTimeout);
-            robotTimeout = setTimeout(() => {
-              console.log('🕛 robotSpeech cleared after 10 seconds of no new messages');
-              this.robotSpeech = null;
-              this.cdr.detectChanges();
-            }, 10000);
-          }
-        });
 
       });
     } catch (error) {
@@ -196,8 +251,24 @@ export class NatiaComponent implements OnInit {
     }
   }
 
+  // -------------------- Disco animation mapping --------------------
+  private setAnimation(message: string): void {
+    switch (message) {
+      case 'Morning': this.currentAnimation = 'assets/gif/morning.gif'; break;
+      case 'Evening': this.currentAnimation = 'assets/gif/evening.gif'; break;
+      case 'Night': this.currentAnimation = 'assets/gif/night.gif'; break;
+      case 'Afternoon': this.currentAnimation = 'assets/gif/afternoon.gif'; break;
+      case 'birthday': this.currentAnimation = 'assets/gif/birthday.gif'; break;
+      case 'NatiasCpuOverload': this.currentAnimation = 'assets/gif/cpu.gif'; break;
+      case 'NatiasRamOverload': this.currentAnimation = 'assets/gif/cpu.gif'; break;
+      case 'TemperatureProblem': this.currentAnimation = 'assets/gif/temperature.gif'; break;
+      default: this.currentAnimation = '/animations/default.gif'; break;
+    }
+  }
+
+  //updating channels how have error
   updateChannelsWithError(updatedChannels: TVChannel[]): void {
-    console.log('🔄 Updating channels with error, current channels:', JSON.stringify(this.channels, null, 2));
+    // console.log('🔄 Updating channels with error, current channels:', JSON.stringify(this.channels, null, 2));
     if (updatedChannels.length > 0) {
       this.channels = [...updatedChannels];
     } else {
@@ -206,27 +277,16 @@ export class NatiaComponent implements OnInit {
     console.log('🔄 Updated channels:', JSON.stringify(this.channels, null, 2));
   }
 
-  updateChannelStatuses(statusData: any[]): void {
-    console.log('🔄 Updating channel statuses, current channels:', JSON.stringify(this.channels, null, 2));
-    const newChannels = this.channels.map(channel => {
-      const status = statusData.find(s => s.id === channel.Order);
-      if (status) {
-        console.log(`🔄 Updating channel ${channel.Order} status to ${status.status}`);
-        return { ...channel };
-      }
-      return channel;
-    });
-    this.channels = [...newChannels];
-    console.log('🔄 Updated channels:', JSON.stringify(this.channels, null, 2));
-  }
 
 
+  //temperature logic
   get isHot(): boolean {
     const temp = parseFloat(this.temperatureInfo?.temperature || '0');
-    console.log('🌡️ Checking isHot, temp:', temp);
+    // console.log('🌡️ Checking isHot, temp:', temp);
     return temp > 24;
   }
 
+  // Angular's trackBy function to optimize ngFor performance.
   trackByOrder(index: number, channel: TVChannel): number {
     return channel.Order;
   }

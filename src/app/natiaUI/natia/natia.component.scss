@@ -190,6 +190,27 @@
 }
 
 
+.disco-container {
+    position: fixed; // Stay on screen
+    top: 50%; // Center vertically
+    left: 50%; // Center horizontally
+    transform: translate(-50%, -50%); // Offset for exact center
+    z-index: 9999; // Make sure it appears on top
+    text-align: center; // Center text under the image
+
+    img {
+        max-width: 300px; // Adjust GIF size
+        width: 100%;
+        height: auto;
+    }
+
+    p {
+        margin-top: 10px;
+        color: white;
+        font-weight: bold;
+        font-size: 16px;
+    }
+}
 
 
 

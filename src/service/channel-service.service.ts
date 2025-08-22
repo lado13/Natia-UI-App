@@ -9,10 +9,12 @@ import { environment } from '../environments/environment';
 })
 export class ChannelServiceService {
 
+  //api
   private apiUrl = environment.apiUrl;
 
   constructor(private http: HttpClient) {}
 
+  //get channels and satellite
   getData(): Observable<ChannelApiResponse> {
     return this.http.get<ChannelApiResponse>(this.apiUrl + 'GetDataForUI');
   }
