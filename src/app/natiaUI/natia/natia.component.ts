@@ -1,3 +1,8 @@
+
+
+
+
+
 import { Component, OnInit, ChangeDetectorRef, NgZone } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ChannelServiceService } from '../../../service/channel-service.service';
@@ -5,8 +10,11 @@ import { SignalRService } from '../../../service/signal-rservice.service';
 import { Satellite } from '../../../model/satellite';
 import { TemperatureInfo } from '../../../model/temperature-info';
 import { TVChannel } from '../../../model/tvchannel';
-import { firstValueFrom } from 'rxjs';
+import { firstValueFrom, Observable } from 'rxjs';
 import { ThemeServiceService } from '../../../service/theme-service.service';
+import { OpticChannelProblem } from '../../../model/optic-channel-problem';
+import { CardInfoToActivate } from '../../../model/card-info-to-activate';
+import { RegionRelay } from '../../../model/region-relay';
 
 @Component({
   selector: 'app-natia',
@@ -20,6 +28,12 @@ export class NatiaComponent implements OnInit {
   satellites: Satellite[] = [];
   temperatureInfo!: TemperatureInfo;
   robotSpeech: string | null = null; // ✅ added
+  opticChannels$!: Observable<OpticChannelProblem[]>;
+  cards$!: Observable<CardInfoToActivate[]>;
+  regionRelays: RegionRelay[] = [];
+
+
+
 
   constructor(
     private channelService: ChannelServiceService,
@@ -35,12 +49,18 @@ export class NatiaComponent implements OnInit {
     await this.initSignalR();
     console.log('🚀 NatiaComponent ngOnInit completed');
 
-    this.themeService.applyAutoTheme();
 
-    // Recheck every hour (or you can reduce this to every minute if needed)
-    setInterval(() => {
-      this.themeService.applyAutoTheme();
-    }, 60 * 60 * 1000); // every hour
+    this.opticChannels$ = this.signalRService.opticChannelProblem$;
+    this.cards$ = this.signalRService.cardInfo$;
+
+
+
+    // this.themeService.applyAutoTheme();
+
+    // // Recheck every hour (or you can reduce this to every minute if needed)
+    // setInterval(() => {
+    //   this.themeService.applyAutoTheme();
+    // }, 60 * 60 * 1000); // every hour
   }
 
 
@@ -76,7 +96,8 @@ export class NatiaComponent implements OnInit {
             Polarisation: detail.polarisation || detail.Polarisation,
             PortIn250: detail.portIn250 || detail.PortIn250 || 0,
             mer: detail.mer || detail.Mer || null,
-            HaveError: detail.haveError !== undefined ? detail.haveError : detail.HaveError || false
+            HaveError: detail.haveError !== undefined ? detail.haveError : detail.HaveError || false,
+            HaveWarn: detail.haveWarn !== undefined ? detail.haveWarn : detail.HaveWarn || false
           }))
         }));
 
@@ -137,6 +158,18 @@ export class NatiaComponent implements OnInit {
           }
         });
 
+        this.signalRService.regionRelay$.subscribe(data => {
+          if (data && Array.isArray(data) && data.length > 0) {
+            console.log('%c🛰️ RegionRelay update received:', 'color: green;', JSON.stringify(data, null, 2));
+            this.regionRelays = [...data];
+            this.cdr.detectChanges();
+
+          } else {
+
+            console.warn('⚠️ Invalid or empty regionRelay data, skipping:', data);
+          }
+        })
+
 
 
 
@@ -187,10 +220,11 @@ export class NatiaComponent implements OnInit {
     console.log('🔄 Updated channels:', JSON.stringify(this.channels, null, 2));
   }
 
+
   get isHot(): boolean {
     const temp = parseFloat(this.temperatureInfo?.temperature || '0');
     console.log('🌡️ Checking isHot, temp:', temp);
-    return temp >= 23;
+    return temp > 24;
   }
 
   trackByOrder(index: number, channel: TVChannel): number {
@@ -200,4 +234,30 @@ export class NatiaComponent implements OnInit {
   trackByDegree(index: number, satellite: Satellite): string {
     return satellite.Degree;
   }
+
+  trackByRegion(index: number, region: RegionRelay): string {
+    return region.regionName;
+  }
+
+  trackByRelayInfo(index: number, info: any): string {
+    return info.FrequecyOrder;
+  }
+
+
+
+
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+

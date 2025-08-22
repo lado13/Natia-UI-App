@@ -23,6 +23,7 @@
 
 
 
+
   <!-- 📺 Channel List -->
   <div class="text-center">
     <div *ngIf="channels.length === 0" class="text-center text-light mt-5">
@@ -47,48 +48,193 @@
     </div>
   </div>
 
-   
+
+
+
   <div *ngIf="robotSpeech" class="text-center mt-4 robot-container">
     <h5 class="text-light bg-dark p-3 rounded-4 border border-light d-inline-block">
-      🤖 {{ robotSpeech }}
+
+      <!-- <img src="assets/gif/o2-o2robot.gif" alt="Hot Asian" width="100" height="100" />-->
+
+      <!-- <img src="assets/gif/o2-o2robot.gif" alt="Hot Asian" width="200" height="200" /> -->
+      <!-- <img src="assets/gif/emo.gif" alt="Hot Asian" width="100" height="100" /> -->
+      <img src="assets/gif/happy-robot.gif" alt="happy-robot" width="150" height="150">
+
+      {{ robotSpeech }}
     </h5>
   </div>
+
+  <div class="d-block container-fluid pe-5 problem-container">
+    <!-- Channels With Problems -->
+    <ng-container *ngIf="opticChannels$ | async as channels">
+      <div class="problem-channel-container float-end" *ngIf="channels.length > 0">
+        <div class="table-responsive problem-table">
+          <h6 class="text-light fw-bold m-0 fs-6 mb-2 channel-problem-title">
+            Optic Channels With Problems
+          </h6>
+          <table class="table table-sm align-middle mb-0 transparent-table">
+            <thead class="text-uppercase">
+              <tr>
+                <th scope="col" class="fit-cell">Channel</th>
+                <th scope="col" class="fit-cell">Port</th>
+                <th scope="col" class="fit-cell">EMR</th>
+                <th scope="col" class="fit-cell">Type</th>
+                <th scope="col" class="fit-cell">Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let channel of channels">
+                <td class="text-capitalize fit-cell transparent-table problem-value">
+                  {{ channel?.chanellName }}
+                </td>
+                <td class="fit-cell transparent-table problem-value">
+                  {{ channel?.portInReciever }}
+                </td>
+                <td class="fit-cell transparent-table problem-value">
+                  {{ channel?.emrName }}
+                </td>
+                <td class="text-capitalize fit-cell transparent-table problem-value">
+                  {{ channel?.chanellType }}
+                </td>
+                <td class="fit-cell transparent-table problem-value">
+                  <span class="badge px-2 py-1 status-cell" [ngClass]="{
+                  'bg-warning text-dark bg-opacity-75': channel.status === 'low bittrate',
+                  'bg-danger bg-opacity-75': channel.status !== 'low bittrate'
+                }">
+                    {{ channel?.status | titlecase }}
+                  </span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </ng-container>
+
+
+
+    <!-- CardInfoToActivate -->
+    <div class="cards-container float-end" *ngIf="(cards$ | async)?.length">
+      <h4 class="text-light fw-bold m-0 fs-6 mb-2 channel-problem-title">Cards To Activate</h4>
+      <table class="cards-table">
+        <thead>
+          <tr>
+            <th>EMR</th>
+            <th>Card</th>
+            <th>Port</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let card of cards$ | async">
+            <td>{{ card?.emr }}</td>
+            <td>{{ card?.card }}</td>
+            <td>{{ card?.port }}</td>
+            <td class="status">{{ card?.status }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+
+
+  <div class="region-relay-section">
+    <!-- Empty state -->
+    <div *ngIf="regionRelays.length === 0" class="text-white-50 small">
+      No region relays available.
+    </div>
+
+    <!-- List of regions -->
+    <div class="row g-1">
+      <div class="col-4 m-0 p-0 " *ngFor="let region of regionRelays; trackBy: trackByRegion">
+        <div class="card bg-dark text-white shadow-sm compact-card region-relay m-0 p-0">
+          <div class="fit-cell">
+            <h6 class="card-title  m-0">{{ region.regionName }}</h6>
+
+            <!-- RelayInfos badges -->
+            <div *ngFor="let info of region.relayInfos; trackBy: trackByRelayInfo" class="regionrelay-mer">
+              <span class="bg-primary tiny-badge">{{ info.frequecyOrder }}</span>
+
+              <span class="tiny-badge" [ngClass]="{
+                    'error': info.isHaveProblem,
+                    'warn': !info.isHaveProblem && info.isWarning,
+                    'bg-success': !info.isHaveProblem && !info.isWarning
+                             }">
+                {{ info.mer }}
+              </span>
+
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+
+
   <hr class="border-light underline line" />
- 
+
   <!-- 📡 Satellite Overview -->
-  <div class="text-center container-fluid">
+  <div class="text-center container-fluid satellite-container">
     <div *ngIf="satellites.length === 0" class="text-center text-light mt-5">
       ⏳ Loading satellites...
     </div>
     <div *ngIf="satellites.length > 0" class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4 ps-3">
       <div class="col satellite-box p-0" *ngFor="let sat of satellites; trackBy: trackByDegree">
         <div class="card satellite-card rounded-0 h-100 p-0 text-white border-0 position-relative overflow-hidden">
-          <div class="card-header rounded-0 p-0 bg-warning text-dark text-center fs-5 fw-bold"
+          <div class="card-header rounded-0 p-0 bg-info text-dark text-center fs-5 fw-bold"
             title="Satellite orbital position">
             <span class="glow-icon">🛰️</span> {{ sat.Degree }}
           </div>
+
           <div class="card-body d-flex flex-column p-0">
-            <div *ngFor="let d of sat.details" class="satellite-container p-2 d-flex"
-              [ngClass]="{ 'error': d.HaveError }"
-              title="{{ d.HaveError ? 'Transponder has an error' : 'Transponder is operational' }}">
-              <span class="badge bg-primary rounded-0" title="Transponder frequency"> {{ d.Frequency }}</span>
-              <span class="badge bg-success rounded-0" title="Symbol rate" > {{
-                d.SymbolRate
-                }}</span>
-              <span class="badge bg-warning text-dark rounded-0" title="Polarization" *ngIf="d.Polarisation !== '-'">{{
-                d.Polarisation }}</span>
-              <!-- <span class="badge bg-info text-dark" title="Port number">Port: {{ d.PortIn250 }}</span> -->
-              <span class="badge bg-secondary rounded-0" title="Modulation Error Ratio"
-                *ngIf="d.mer !== 'N/A' && d.mer !== null">{{ d.mer }}</span>
+            <div *ngFor="let d of sat.details" class="sat-detail d-flex p-2">
+
+
+              <!-- SymbolRate -->
+              <span class="badge rounded-0" [class.error]="d.HaveError" [class.warn]="!d.HaveError && d.HaveWarn"
+                [class.bg-success]="!d.HaveError && !d.HaveWarn" [title]="d.HaveError 
+                ? 'Transponder has an error' 
+                : d.HaveWarn 
+                  ? 'Transponder warning' 
+                  : 'Operational'">
+                {{ d.SymbolRate }}
+              </span>
+
+              <!-- MER -->
+              <span class="badge rounded-0" *ngIf="d.mer !== 'N/A' && d.mer !== null" [class.error]="d.HaveError"
+                [class.warn]="!d.HaveError && d.HaveWarn" [class.bg-secondary]="!d.HaveError && !d.HaveWarn">
+                {{ d.mer }}
+              </span>
+
+
+
+
+
+
+
             </div>
+
+
             <div *ngIf="sat.details.length === 0" class="text-center text-light p-2">
               No transponder details available
             </div>
           </div>
+
+
+
         </div>
       </div>
     </div>
   </div>
+
+
+
+
+
 
 
 </div>

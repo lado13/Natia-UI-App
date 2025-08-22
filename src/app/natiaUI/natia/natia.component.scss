@@ -133,6 +133,7 @@
     text-shadow: 0 0 3px #0ff;
 }
 
+
 @keyframes redPulse {
     0% {
         background-color: #dc3545;
@@ -148,12 +149,50 @@
     }
 }
 
+@keyframes warnPulse {
+    0% {
+        background-color: #ffc107;
+        box-shadow: 0 0 0 0 rgba(255, 193, 7, 0.7);
+    }
+
+    70% {
+        box-shadow: 0 0 0 10px rgba(255, 193, 7, 0);
+    }
+
+    100% {
+        box-shadow: 0 0 0 0 rgba(255, 193, 7, 0);
+    }
+}
+
+
 .error {
     background-color: #dc3545 !important;
     animation: redPulse 1.5s infinite;
-    border-radius: 8px;
     color: white;
 }
+
+.warn {
+    background-color: #ffc107 !important;
+    animation: warnPulse 1.5s infinite;
+    color: black !important;
+}
+
+.badge.error {
+    background-color: #dc3545 !important;
+    animation: redPulse 1.5s infinite;
+    color: white !important;
+}
+
+.badge.warn {
+    background-color: #ffc107 !important;
+    animation: warnPulse 1.5s infinite;
+    color: black !important;
+}
+
+
+
+
+
 
 .temperature-info-container {
     float: inline-start;
@@ -178,13 +217,152 @@
     left: 50%;
     top: -50;
     transform: translateX(-50%);
-    z-index: 999;
+    z-index: 999999999999;
 }
 
-.line{
+.line {
     border: none;
 }
 
-.underline{
-    margin-bottom: 100px;
+.underline {
+    margin-bottom: 125px;
+}
+
+.transparent-table {
+    background-color: rgba(0, 0, 0, 0.25);
+    color: #fff !important;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    width: 270px !important;
+}
+
+.transparent-table th {
+    background-color: rgba(0, 0, 0, 0.5);
+    color: #ffffff !important;
+}
+
+.transparent-table tr:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.fit-cell {
+    font-size: 10px;
+}
+
+// .problem-table {
+//     // margin-left: 1698px;
+
+// }
+
+// .problem-channel-container {
+//     position: absolute;
+//     right: 22px;
+//     top: 25px;
+// }
+
+.satellite-container {
+    position: relative;
+}
+
+.channel-problem-title {
+    background-color: rgb(20 90 78);
+    padding: 5px;
+}
+
+.problem-value {
+    font-size: 13px;
+    font-weight: bolder;
+    background-color: #3a77632a;
+}
+
+.cards-container {
+    padding: 8px;
+    background: #3a77632a;
+    border-radius: 6px;
+    max-width: 450px;
+    font-family: Arial, sans-serif;
+    width: 270px !important;
+    // margin-top: 155px;
+}
+
+.problem-container {
+    position: absolute;
+    right: 5px;
+    z-index: 9999999;
+
+}
+
+.cards-container h4 {
+    margin: 0 0 6px;
+    font-size: 14px;
+    font-weight: bold;
+    color: white;
+}
+
+.cards-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+    color: white;
+}
+
+.cards-table th,
+.cards-table td {
+    padding: 4px 6px;
+    text-align: left;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.cards-table th {
+    background: rgba(255, 255, 255, 0.1);
+    font-weight: bold;
+    color: white;
+}
+
+.cards-table tbody tr:hover {
+    background: rgba(255, 255, 255, 0.15);
+}
+
+.status {
+    color: #ff6666;
+    font-weight: bold;
+}
+
+.empty-msg {
+    margin-top: 4px;
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.7);
+    text-align: center;
+}
+
+.status-cell {
+    width: 70px !important;
+}
+
+
+.region-relay-section {
+
+
+    .compact-card {
+        height: auto;
+    }
+
+
+    .tiny-badge {
+        font-size: 10px;
+        padding: 0.2rem 0.35rem;
+    }
+}
+
+.region-relay {
+    width: 60px;
+    text-align: center;
+}
+
+.region-relay-section {
+    position: absolute;
+    left: 65px;
+}
+
+.regionrelay-mer {
+    text-align: left;
 }

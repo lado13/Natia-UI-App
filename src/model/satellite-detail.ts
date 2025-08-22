@@ -4,5 +4,6 @@ export interface SatelliteDetail {
     Polarisation: string;
     PortIn250: number;
     mer: string | null;
-    HaveError: boolean; 
+    HaveError: boolean;
+    HaveWarn: boolean;
 }

@@ -1,9 +1,13 @@
+
 import { Injectable } from '@angular/core';
 import * as signalR from '@microsoft/signalr';
 import { BehaviorSubject } from 'rxjs';
 import { environment } from '../environments/environment';
 import { TVChannel } from '../model/tvchannel';
 import { Satellite } from '../model/satellite';
+import { OpticChannelProblem } from '../model/optic-channel-problem';
+import { CardInfoToActivate } from '../model/card-info-to-activate';
+import { RegionRelay } from '../model/region-relay';
 
 @Injectable({
   providedIn: 'root'
@@ -25,6 +29,16 @@ export class SignalRService {
 
   private satelliteSource = new BehaviorSubject<Satellite[]>([]);
   satellite$ = this.satelliteSource.asObservable();
+
+  private opticChannelProblemSource = new BehaviorSubject<OpticChannelProblem[]>([]);
+  opticChannelProblem$ = this.opticChannelProblemSource.asObservable();
+
+  private cardInfoSource = new BehaviorSubject<CardInfoToActivate[]>([]);
+  cardInfo$ = this.cardInfoSource.asObservable();
+
+  private regionRelaySource = new BehaviorSubject<RegionRelay[]>([]);
+  regionRelay$ = this.regionRelaySource.asObservable();
+
 
   public async startConnection(): Promise<void> {
     this.hubConnection = new signalR.HubConnectionBuilder()
@@ -110,26 +124,117 @@ export class SignalRService {
       }
     });
 
-    // 🛰️ Satellite Monitoring
+
     this.hubConnection.on('satelliteMonitoringUpdate', (data: any[]) => {
-      console.log('%c🛰️ satelliteMonitoringUpdate:', 'color: blue;', JSON.stringify(data, null, 2));
+      console.log('🛰️ satelliteMonitoringUpdate:', data);
       if (Array.isArray(data) && data.length > 0) {
         const mappedData: Satellite[] = data.map(item => ({
-          Degree: item.degree || item.Degree,
+          Degree: item.degree ?? item.Degree,
           details: (item.details || []).map((detail: any) => ({
-            Frequency: detail.frequency || detail.Frequency,
-            SymbolRate: detail.symbolRate || detail.SymbolRate,
-            Polarisation: detail.polarisation || detail.Polarisation,
-            PortIn250: detail.portIn250 || detail.PortIn250 || 0,
-            mer: detail.mer || detail.Mer || null,
-            HaveError: detail.haveError !== undefined ? detail.haveError : detail.HaveError || false
+            Frequency: detail.frequency ?? detail.Frequency,
+            SymbolRate: detail.symbolRate ?? detail.SymbolRate,
+            Polarisation: detail.polarisation ?? detail.Polarisation,
+            PortIn250: detail.portIn250 ?? detail.PortIn250 ?? 0,
+            mer: detail.mer ?? detail.Mer ?? null,
+            HaveError: !!(detail.haveError ?? detail.HaveError),
+            HaveWarn: !!(detail.haveWarn ?? detail.HaveWarn)
           }))
         }));
-        console.log('%c🛰️ Mapped satelliteMonitoringUpdate:', 'color: blue;', JSON.stringify(mappedData, null, 2));
         this.satelliteSource.next(mappedData);
       } else {
-        console.warn('⚠️ Invalid or empty satelliteMonitoringUpdate data, skipping:', data);
+        console.warn('⚠️ Invalid or empty satelliteMonitoringUpdate data:', data);
       }
     });
+
+
+
+    this.hubConnection.on('OpticChannelHealthUpdate', (data: any) => {
+      const updates: OpticChannelProblem[] = data.opticChanellsWhichHaveProblem || [];
+
+      if (!Array.isArray(updates) || updates.length === 0) {
+        this.opticChannelProblemSource.next([]);
+        return;
+      }
+
+      this.opticChannelProblemSource.next(updates.map(u => ({ ...u })));
+    });
+
+
+
+    this.hubConnection.on('CardsWhichNeedToBeActivate', (data: any) => {
+      const updates: CardInfoToActivate[] = data.cardsInfoThathNeedToBeActivated || [];
+
+      if (!Array.isArray(updates)) return;
+
+      if (updates.length === 0) {
+        this.cardInfoSource.next([]);
+        return;
+      }
+
+      const current = this.cardInfoSource.value;
+      const newArray = [...current];
+
+      updates.forEach(update => {
+        const index = newArray.findIndex(c =>
+          c.card === update.card &&
+          c.port === update.port &&
+          c.emr === update.emr
+        );
+
+        if (index >= 0) {
+          newArray[index] = { ...newArray[index], ...update };
+        } else {
+          newArray.push(update);
+        }
+      });
+
+
+      this.cardInfoSource.next([...newArray]);
+    });
+
+
+
+    this.hubConnection.on('regionbitrateupdate', (data: any) => {
+      console.log('[SignalR] GetRegionMergGrouped received:', data);
+
+      const updates: RegionRelay[] = Array.isArray(data) ? data : [];
+
+      if (updates.length === 0) {
+        console.log('[SignalR] No region relays found, clearing BehaviorSubject.');
+        this.regionRelaySource.next([]);
+        return;
+      }
+
+      console.log('[SignalR] Updating BehaviorSubject with new region relays.');
+      this.regionRelaySource.next(updates.map(u => ({ ...u })));
+    });
+
+
   }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
