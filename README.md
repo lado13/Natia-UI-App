@@ -1,27 +1,45 @@
-# NatiaUIApp
+# 📺 NatiaUIApp
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 17.1.1.
+NatiaUIApp is an Angular 17 project designed to provide a modern and dynamic UI for managing and displaying live data such as TV channels, satellites, and real-time updates via SignalR.
 
-## Development server
+---
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
+## 🚀 Features
+- ✅ Built with **Angular 17 (Standalone Components)**
+- ✅ **Service-based architecture** for clean separation of logic
+- ✅ **SignalR real-time updates** (e.g., live channel status refresh without page reload)
+- ✅ **Responsive UI** with Angular & Bootstrap
+- ✅ **Error & Warning indicators** for live satellite/channel data
+- ✅ **Reusable components** for scalability
 
-## Code scaffolding
+---
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+## 🖼️ Screenshots
 
-## Build
+### Dashboard View
+![Dashboard Screenshot](screenshots/Screenshot1.png)
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
+### Channel List
+![Channels Screenshot](screenshots/Screenshot2.png)
 
-## Running unit tests
+*(Add your actual screenshots in a `/screenshots` folder inside the project)*
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+---
 
-## Running end-to-end tests
+## 🛠️ Tech Stack
+- **Frontend:** Angular 17, RxJS
+- **Backend (SignalR source):** .NET Core (assumed)
+- **Styling:** Bootstrap / SCSS
+- **Real-time:** SignalR integration
 
-Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
+---
 
-## Further help
-
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
+## 📂 Project Structure
+```bash
+src/app/
+ ├── components/       # Reusable UI components
+ ├── services/         # SignalR + API services
+ ├── models/           # TypeScript interfaces & models
+ ├── pages/            # Main feature pages
+ ├── app.config.ts     # Angular configuration
+ └── app.component.ts  # Root component

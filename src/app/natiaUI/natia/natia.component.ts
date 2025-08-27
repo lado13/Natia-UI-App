@@ -1,8 +1,4 @@
 
-
-
-
-
 import { Component, OnInit, ChangeDetectorRef, NgZone } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ChannelServiceService } from '../../../service/channel-service.service';
@@ -76,6 +72,7 @@ export class NatiaComponent implements OnInit {
 
     for (let attempt = 1; attempt <= retries; attempt++) {
       try {
+
         //channels
         const data = await firstValueFrom(this.channelService.getData());
         // console.log('📊 Raw API response:', JSON.stringify(data, null, 2));
@@ -114,8 +111,6 @@ export class NatiaComponent implements OnInit {
 
         //temperature
         this.temperatureInfo = data.TemperatureInfo || {};
-        // console.log('📺 Channels after mapping:', JSON.stringify(this.channels, null, 2));
-        // console.log('🛰️ Satellites after mapping:', JSON.stringify(this.satellites, null, 2));
         // console.log('🌡️ Temperature after mapping:', JSON.stringify(this.temperatureInfo, null, 2));
         this.cdr.detectChanges();
         return;
@@ -145,7 +140,7 @@ export class NatiaComponent implements OnInit {
 
 
         let discoTimeout: any;
-   
+
         // Disco animation
         this.signalRService.discoAnimation$.subscribe(msg => {
           console.log('New disco message:', msg);
