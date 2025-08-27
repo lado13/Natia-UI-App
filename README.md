@@ -16,11 +16,11 @@ NatiaUIApp is an Angular 17 project designed to provide a modern and dynamic UI 
 
 ## 🖼️ Screenshots
 
-### Dashboard View
-![Dashboard Screenshot](screenshots/Screenshot1.png)
+### Web View
+![Screenshot](/src/screenshots/Screenshot1.png)
 
-### Channel List
-![Channels Screenshot](screenshots/Screenshot2.png)
+
+![Screenshot](/src/screenshots/Screenshot2.png)
 
 *(Add your actual screenshots in a `/screenshots` folder inside the project)*
 
