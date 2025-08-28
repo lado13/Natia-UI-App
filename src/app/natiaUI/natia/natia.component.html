@@ -1,4 +1,4 @@
-<div class="container-fluid py-4 p-4 ps-5">
+<div class="container-fluid py-4 pt-1 p-4 ps-5 pb-3">
   <!-- 🌡️ Temperature Info -->
   <div *ngIf="temperatureInfo" class="text-center temperature-info-container mt-4">
     <div class="d-flex justify-content-center gap-3 flex-wrap">
@@ -18,11 +18,6 @@
   <div *ngIf="!temperatureInfo" class="text-center text-light mt-5">
     ⏳ Loading temperature info...
   </div>
-
-
-
-
-
 
   <!-- 📺 Channel List -->
   <div class="text-center">
@@ -48,7 +43,6 @@
     </div>
   </div>
 
-
   <!-- Disco container -->
   <div class="disco-container" *ngIf="currentMessage">
     <img *ngIf="currentAnimation" [src]="currentAnimation" alt="Disco Animation" />
@@ -57,7 +51,7 @@
 
   <div *ngIf="robotSpeech" class="text-center mt-4 robot-container">
     <h5 class="text-light bg-dark p-3 rounded-4 border border-light d-inline-block">
-      <img src="assets/gif/emo.gif" alt="happy-robot" width="100" height="100">
+      <img src="assets/gif/o2-bubl.gif" alt="happy-robot" width="100" height="100">
 
       {{ robotSpeech }}
     </h5>
@@ -67,8 +61,8 @@
 
     <!-- Channels With Problems -->
     <ng-container *ngIf="opticChannels$ | async as channels">
-      <div class="problem-channel-container float-end" *ngIf="channels.length > 0">
-        <div class="table-responsive problem-table">
+      <div class=" float-end" *ngIf="channels.length > 0">
+        <div class="table-responsive">
           <h6 class="text-light fw-bold m-0 fs-6 mb-2 channel-problem-title">
             Optic Channels With Problems
           </h6>
@@ -97,7 +91,7 @@
                   {{ channel?.chanellType }}
                 </td>
                 <td class="fit-cell transparent-table problem-value">
-                  <span class="badge px-2 py-1 status-cell" [ngClass]="{
+                  <span class="badge px-2 py-1 status-cell rounded-0" [ngClass]="{
                   'bg-warning text-dark bg-opacity-75': channel.status === 'low bittrate',
                   'bg-danger bg-opacity-75': channel.status !== 'low bittrate'
                 }">
@@ -111,11 +105,9 @@
       </div>
     </ng-container>
 
-
-
     <!-- CardInfoToActivate -->
     <div class="cards-container float-end" *ngIf="(cards$ | async)?.length">
-      <h4 class="text-light fw-bold m-0 fs-6 mb-2 channel-problem-title">Cards To Activate</h4>
+      <h4 class="text-light fw-bold m-0 fs-6 mb-2">Cards To Activate</h4>
       <table class="cards-table">
         <thead>
           <tr>
@@ -136,8 +128,6 @@
       </table>
     </div>
   </div>
-
-
 
   <div class="region-relay-section">
     <!-- Empty state -->
@@ -173,8 +163,6 @@
   </div>
 
 
-
-
   <hr class="border-light underline line" />
 
   <!-- 📡 Satellite Overview -->
@@ -191,10 +179,10 @@
           </div>
 
           <div class="card-body d-flex flex-column p-0">
-            <div *ngFor="let d of sat.details" class="sat-detail d-flex p-2">
+            <div *ngFor="let d of sat.details" class="sat-detail d-flex p-1">
 
               <!-- SymbolRate -->
-              <span class="badge rounded-0" [class.error]="d.HaveError" [class.warn]="!d.HaveError && d.HaveWarn"
+              <span class="badge satellite-value rounded-0" [class.error]="d.HaveError" [class.warn]="!d.HaveError && d.HaveWarn"
                 [class.bg-success]="!d.HaveError && !d.HaveWarn" [title]="d.HaveError 
                 ? 'Transponder has an error' 
                 : d.HaveWarn 
@@ -221,7 +209,6 @@
       </div>
     </div>
   </div>
-
 
 
 

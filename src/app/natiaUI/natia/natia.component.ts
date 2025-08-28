@@ -31,10 +31,6 @@ export class NatiaComponent implements OnInit {
   currentMessage: DiscoMessage | null = null;
   currentAnimation: string | null = null;
 
-
-
-
-
   constructor(
     private channelService: ChannelServiceService,
     private signalRService: SignalRService,
@@ -49,34 +45,26 @@ export class NatiaComponent implements OnInit {
     await this.initSignalR();
     console.log('🚀 NatiaComponent ngOnInit completed');
 
-
     //channels with problem
     this.opticChannels$ = this.signalRService.opticChannelProblem$;
 
     //card activate
     this.cards$ = this.signalRService.cardInfo$;
 
-
-
     // this.themeService.applyAutoTheme();
-
     // // Recheck every hour (or you can reduce this to every minute if needed)
     // setInterval(() => {
     //   this.themeService.applyAutoTheme();
     // }, 60 * 60 * 1000); // every hour
   }
 
-
   //default load api
   async loadDataWithRetry(retries = 3, delay = 2000): Promise<void> {
-
     for (let attempt = 1; attempt <= retries; attempt++) {
       try {
 
         //channels
         const data = await firstValueFrom(this.channelService.getData());
-        // console.log('📊 Raw API response:', JSON.stringify(data, null, 2));
-
         let rawChannels = data.ChanellInfo || [];
         if (!Array.isArray(rawChannels)) {
           console.warn('⚠️ API channels data is not an array:', rawChannels);
@@ -93,7 +81,7 @@ export class NatiaComponent implements OnInit {
         //satellite
         let rawSatellites = data.SatelliteView || [];
         if (!Array.isArray(rawSatellites)) {
-          console.warn('⚠️ API satellites data is not an array:', rawSatellites);
+          // console.warn('⚠️ API satellites data is not an array:', rawSatellites);
           rawSatellites = [];
         }
         this.satellites = rawSatellites.map((item: any) => ({
@@ -111,7 +99,6 @@ export class NatiaComponent implements OnInit {
 
         //temperature
         this.temperatureInfo = data.TemperatureInfo || {};
-        // console.log('🌡️ Temperature after mapping:', JSON.stringify(this.temperatureInfo, null, 2));
         this.cdr.detectChanges();
         return;
       } catch (error) {
@@ -128,45 +115,36 @@ export class NatiaComponent implements OnInit {
     this.cdr.detectChanges();
   }
 
-
   //signaler
   async initSignalR(): Promise<void> {
     try {
       await this.signalRService.startConnection();
       console.log('📡 SignalR subscriptions initializing');
-
       this.ngZone.run(() => {
 
-
-
         let discoTimeout: any;
-
+        
         // Disco animation
         this.signalRService.discoAnimation$.subscribe(msg => {
-          console.log('New disco message:', msg);
-
+          // console.log('New disco message:', msg);
           if (msg?.message) {
             this.currentMessage = msg;
             this.setAnimation(msg.message);
             this.cdr.detectChanges();
-
             clearTimeout(discoTimeout);
             discoTimeout = setTimeout(() => {
               console.log('🕛 Disco cleared after 10 seconds');
               this.currentMessage = null;
               this.currentAnimation = null;
               this.cdr.detectChanges();
-            }, 30000);
+            }, 50000);
           } else {
-            // If null/invalid message
             this.currentMessage = null;
             this.currentAnimation = null;
             clearTimeout(discoTimeout);
             this.cdr.detectChanges();
           }
         });
-
-
 
         let robotTimeout: any;
         // ✅ 🤖 robotsay update
@@ -180,12 +158,9 @@ export class NatiaComponent implements OnInit {
               console.log('🕛 robotSpeech cleared after 10 seconds of no new messages');
               this.robotSpeech = null;
               this.cdr.detectChanges();
-            }, 10000);
+            }, 30000);
           }
         });
-
-
-
 
         //temperature
         this.signalRService.temperature$.subscribe(data => {
@@ -193,11 +168,8 @@ export class NatiaComponent implements OnInit {
             // console.log('🌡️ Temperature update received:', JSON.stringify(data, null, 2));
             this.temperatureInfo = { ...data };
             this.cdr.detectChanges();
-            console.log('🔁 UI updated with temperature');
           }
         });
-
-
 
         //chanell
         this.signalRService.chanellInfo$.subscribe(data => {
@@ -205,7 +177,6 @@ export class NatiaComponent implements OnInit {
             // console.log('%c📡 Channel info update received:', 'color: cyan;', JSON.stringify(data, null, 2));
             this.updateChannelsWithError(data);
             this.cdr.detectChanges();
-            // console.log('🔁 UI updated with channel info, channels:', JSON.stringify(this.channels, null, 2));
           } else {
             console.warn('⚠️ Invalid or empty chanellInfo data, skipping:', data);
           }
@@ -217,7 +188,6 @@ export class NatiaComponent implements OnInit {
             // console.log('%c🛰️ Satellite update received:', 'color: blue;', JSON.stringify(data, null, 2));
             this.satellites = [...data];
             this.cdr.detectChanges();
-            // console.log('🔁 UI updated with satellites, satellites:', JSON.stringify(this.satellites, null, 2));
           } else {
             console.warn('⚠️ Invalid or empty satellite data, skipping:', data);
           }
@@ -229,16 +199,10 @@ export class NatiaComponent implements OnInit {
             // console.log('%c🛰️ RegionRelay update received:', 'color: green;', JSON.stringify(data, null, 2));
             this.regionRelays = [...data];
             this.cdr.detectChanges();
-
           } else {
-
             console.warn('⚠️ Invalid or empty regionRelay data, skipping:', data);
           }
         })
-
-
-
-
 
       });
     } catch (error) {
@@ -263,7 +227,7 @@ export class NatiaComponent implements OnInit {
 
   //updating channels how have error
   updateChannelsWithError(updatedChannels: TVChannel[]): void {
-    // console.log('🔄 Updating channels with error, current channels:', JSON.stringify(this.channels, null, 2));
+    console.log('🔄 Updating channels with error, current channels:', JSON.stringify(this.channels, null, 2));
     if (updatedChannels.length > 0) {
       this.channels = [...updatedChannels];
     } else {
@@ -271,8 +235,6 @@ export class NatiaComponent implements OnInit {
     }
     console.log('🔄 Updated channels:', JSON.stringify(this.channels, null, 2));
   }
-
-
 
   //temperature logic
   get isHot(): boolean {

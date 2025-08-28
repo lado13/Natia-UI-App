@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg xmlns="http://www.w3.org/2000/svg"
+     xmlns:xlink="http://www.w3.org/1999/xlink"
+     viewBox="0 0 1920 1080"
+     preserveAspectRatio="xMidYMid slice"
+     role="img" aria-label="Animated space background">
+
+  <defs>
+    <!-- Nebula gradients -->
+    <radialGradient id="nebA" cx="25%" cy="35%" r="55%">
+      <stop offset="0%" stop-color="#ff8bb3" stop-opacity="0.9"/>
+      <stop offset="50%" stop-color="#8a4bff" stop-opacity="0.28"/>
+      <stop offset="100%" stop-color="#000000" stop-opacity="0"/>
+    </radialGradient>
+
+    <radialGradient id="nebB" cx="75%" cy="65%" r="55%">
+      <stop offset="0%" stop-color="#7ef0ff" stop-opacity="0.85"/>
+      <stop offset="50%" stop-color="#5ee1a0" stop-opacity="0.24"/>
+      <stop offset="100%" stop-color="#000000" stop-opacity="0"/>
+    </radialGradient>
+
+    <linearGradient id="tailGrad" x1="0" x2="1">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.95"/>
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
+    </linearGradient>
+
+    <linearGradient id="softOverlay" x1="0" x2="1">
+      <stop offset="0%" stop-color="#ffb4a2" stop-opacity="0.03"/>
+      <stop offset="100%" stop-color="#9ad3de" stop-opacity="0.02"/>
+    </linearGradient>
+
+    <!-- small star symbol -->
+    <g id="starSymbol">
+      <circle r="1" fill="#ffffff"/>
+    </g>
+
+    <!-- planet texture pattern -->
+    <pattern id="planetTex" width="8" height="8" patternUnits="userSpaceOnUse">
+      <circle cx="2" cy="2" r="1" fill="rgba(255,255,255,0.03)"/>
+      <circle cx="6" cy="6" r="0.8" fill="rgba(255,255,255,0.02)"/>
+    </pattern>
+
+    <!-- blur filter for softness -->
+    <filter id="bigBlur" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="32"/>
+    </filter>
+  </defs>
+
+  <!-- dark base -->
+  <rect width="100%" height="100%" fill="#02010b"/>
+
+  <!-- Galaxy group with slow rotation -->
+  <g id="galaxy" opacity="0.95" style="mix-blend-mode:screen">
+    <ellipse cx="520" cy="320" rx="780" ry="420" fill="url(#nebA)" filter="url(#bigBlur)">
+      <animate attributeName="cy" values="320;340;320" dur="14s" repeatCount="indefinite"/>
+    </ellipse>
+    <ellipse cx="1380" cy="720" rx="920" ry="480" fill="url(#nebB)" filter="url(#bigBlur)" opacity="0.88">
+      <animate attributeName="cy" values="720;700;720" dur="18s" repeatCount="indefinite"/>
+    </ellipse>
+
+    <animateTransform attributeName="transform" type="rotate"
+                      from="0 960 540" to="360 960 540"
+                      dur="400s" repeatCount="indefinite"/>
+  </g>
+
+  <!-- Continuous moving stars -->
+  <g id="movingStars">
+    <!-- Star 1 -->
+    <circle cx="0" cy="100" r="1.5" fill="white">
+      <animate attributeName="cx" from="0" to="1920" dur="20s" repeatCount="indefinite"/>
+    </circle>
+    <!-- Star 2 -->
+    <circle cx="0" cy="300" r="1" fill="white">
+      <animate attributeName="cx" from="-100" to="1920" dur="15s" repeatCount="indefinite"/>
+    </circle>
+    <!-- Star 3 -->
+    <circle cx="0" cy="500" r="2" fill="white">
+      <animate attributeName="cx" from="-50" to="1920" dur="25s" repeatCount="indefinite"/>
+    </circle>
+    <!-- Star 4 -->
+    <circle cx="0" cy="700" r="1.2" fill="white">
+      <animate attributeName="cx" from="-150" to="1920" dur="18s" repeatCount="indefinite"/>
+    </circle>
+    <!-- Star 5 -->
+    <circle cx="0" cy="900" r="1.8" fill="white">
+      <animate attributeName="cx" from="-200" to="1920" dur="22s" repeatCount="indefinite"/>
+    </circle>
+  </g>
+
+  <!-- Twinkling stars (same as before) -->
+  <g id="stars" fill="#ffffff" opacity="0.95">
+    <use xlink:href="#starSymbol" x="120" y="80" opacity="0.78">
+      <animate attributeName="opacity" values="0.2;1;0.2" dur="3.6s" repeatCount="indefinite"/>
+    </use>
+    <use xlink:href="#starSymbol" x="200" y="140" opacity="0.6">
+      <animate attributeName="opacity" values="0.15;1;0.15" dur="4.2s" begin="0.6s" repeatCount="indefinite"/>
+    </use>
+  </g>
+
+  <!-- Planet group with orbit + spin -->
+  <g id="planetOrbit">
+    <g id="planet" transform="translate(1520,300)">
+      <ellipse cx="0" cy="-20" rx="160" ry="160" fill="none" stroke="#8ea6ff" stroke-opacity="0.06" stroke-width="20"/>
+      <circle cx="0" cy="0" r="120" fill="#2d1b6f"/>
+      <circle cx="-6" cy="-8" r="120" fill="url(#planetTex)" opacity="0.12"/>
+      <animateTransform attributeName="transform" attributeType="XML"
+                        type="rotate" from="0 0 0" to="360 0 0"
+                        dur="90s" repeatCount="indefinite"/>
+    </g>
+    <animateTransform attributeName="transform" attributeType="XML"
+                      type="rotate" from="0 960 540" to="360 960 540"
+                      dur="300s" repeatCount="indefinite"/>
+  </g>
+
+  <!-- Comet -->
+  <g id="comet" opacity="0.95">
+    <path id="cometPath" d="M-240 280 C 200 50, 700 300, 1360 160" fill="none"/>
+    <path d="M-240 280 C 40 160, 480 260, 920 200"
+          stroke="url(#tailGrad)" stroke-width="2.8" fill="none" stroke-linecap="round">
+      <animate attributeName="stroke-opacity" values="0.35;0.9;0.35" dur="3.6s" repeatCount="indefinite"/>
+    </path>
+    <g>
+      <circle r="4.2" fill="#fff">
+        <animate attributeName="opacity" values="0.7;1;0.7" dur="1.6s" repeatCount="indefinite"/>
+      </circle>
+      <animateMotion dur="8.2s" repeatCount="indefinite" rotate="auto">
+        <mpath xlink:href="#cometPath"/>
+      </animateMotion>
+    </g>
+  </g>
+
+  <!-- overlay -->
+  <rect width="100%" height="100%" fill="url(#softOverlay)" opacity="0.7"/>
+</svg>
