@@ -12,6 +12,7 @@ import { OpticChannelProblem } from '../../../model/optic-channel-problem';
 import { CardInfoToActivate } from '../../../model/card-info-to-activate';
 import { RegionRelay } from '../../../model/region-relay';
 import { DiscoMessage } from '../../../model/disco-message';
+import { EmrTemperature } from '../../../model/emr-temperature';
 
 @Component({
   selector: 'app-natia',
@@ -30,6 +31,7 @@ export class NatiaComponent implements OnInit {
   robotSpeech: string | null = null;
   currentMessage: DiscoMessage | null = null;
   currentAnimation: string | null = null;
+  emrtemperature: EmrTemperature[] = [];
 
   constructor(
     private channelService: ChannelServiceService,
@@ -123,7 +125,7 @@ export class NatiaComponent implements OnInit {
       this.ngZone.run(() => {
 
         let discoTimeout: any;
-        
+
         // Disco animation
         this.signalRService.discoAnimation$.subscribe(msg => {
           // console.log('New disco message:', msg);
@@ -202,7 +204,17 @@ export class NatiaComponent implements OnInit {
           } else {
             console.warn('⚠️ Invalid or empty regionRelay data, skipping:', data);
           }
-        })
+        });
+
+        this.signalRService.emrTemperature$.subscribe(data => {
+          if (data && Array.isArray(data) && data.length > 0) { 
+            // console.log('%c🛰️ Emr temperature update received:', 'color: green;', JSON.stringify(data, null, 2));
+            this.emrtemperature = [...data];
+            this.cdr.detectChanges();
+          } else {
+            console.warn('⚠️ Invalid or empty emr temperature data, skipping:', data);
+          }
+        });
 
       });
     } catch (error) {
@@ -259,6 +271,12 @@ export class NatiaComponent implements OnInit {
   trackByRelayInfo(index: number, info: any): string {
     return info.FrequecyOrder;
   }
+
+  trackByEmrTemperature(index: number, emrTemp: EmrTemperature): string {
+    return emrTemp.Name;
+  }
+
+
 
 
 

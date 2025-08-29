@@ -46,7 +46,7 @@
                     width: -webkit-fill-available;
                 }
 
-                .sat-detail{
+                .sat-detail {
                     border: 1px solid white;
                 }
 
@@ -232,6 +232,21 @@
 
 
 }
+
+//emr region temperature
+.emr-temperature-section {
+    position: absolute;
+    left: 260px;
+
+    .emr-temp-size {
+        // width: 103px !important;
+        padding: 2px;
+        display: contents;
+
+    }
+
+}
+
 
 
 

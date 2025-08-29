@@ -163,6 +163,48 @@
   </div>
 
 
+
+  <!-- emr region temperature -->
+  <div class="emr-temperature-section">
+    <div *ngIf="emrtemperature.length === 0" class="text-white-50 small text-center">
+      No region EMR temperature available.
+    </div>
+
+    <div class="row" *ngIf="emrtemperature.length > 0">
+      <div class="emr-temp-size" *ngFor="let r of emrtemperature; trackBy: trackByEmrTemperature">
+        <div class="bg-dark text-white text-center p-1">
+          <div class="fw-bold text-truncate">{{ r.Name }}</div>
+          <div class="badge bg-light text-dark mt-1 rounded-0" [ngClass]="{
+           'error': r.IsError,
+           'warn': !r.IsError && r.IsWarm,
+           'bg-success': !r.IsError && !r.IsWarm
+         }">{{ r.Temperature }}</div>
+          <div class="badge mt-1 rounded-0" [ngClass]="{
+           'error': r.IsError,
+           'warn': !r.IsError && r.IsWarm,
+           'bg-success': !r.IsError && !r.IsWarm
+         }">
+            {{ r.IsError ? 'Hot' : (r.IsWarm ? 'Warm' : 'Normal') }}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   <hr class="border-light underline line" />
 
   <!-- 📡 Satellite Overview -->
@@ -182,8 +224,8 @@
             <div *ngFor="let d of sat.details" class="sat-detail d-flex p-1">
 
               <!-- SymbolRate -->
-              <span class="badge satellite-value rounded-0" [class.error]="d.HaveError" [class.warn]="!d.HaveError && d.HaveWarn"
-                [class.bg-success]="!d.HaveError && !d.HaveWarn" [title]="d.HaveError 
+              <span class="badge satellite-value rounded-0" [class.error]="d.HaveError"
+                [class.warn]="!d.HaveError && d.HaveWarn" [class.bg-success]="!d.HaveError && !d.HaveWarn" [title]="d.HaveError 
                 ? 'Transponder has an error' 
                 : d.HaveWarn 
                   ? 'Transponder warning' 

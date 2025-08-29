@@ -9,6 +9,7 @@ import { OpticChannelProblem } from '../model/optic-channel-problem';
 import { CardInfoToActivate } from '../model/card-info-to-activate';
 import { RegionRelay } from '../model/region-relay';
 import { DiscoMessage } from '../model/disco-message';
+import { EmrTemperature } from '../model/emr-temperature';
 
 @Injectable({
   providedIn: 'root'
@@ -43,6 +44,9 @@ export class SignalRService {
 
   private discoAnimationSource = new BehaviorSubject<DiscoMessage | null>(null);
   discoAnimation$ = this.discoAnimationSource.asObservable();
+
+  private emrTemperatureSource = new BehaviorSubject<EmrTemperature[]>([]);
+  emrTemperature$ = this.emrTemperatureSource.asObservable();
 
   //signaler connection start
   public async startConnection(): Promise<void> {
@@ -197,6 +201,23 @@ export class SignalRService {
       console.log('[SignalR] Updating BehaviorSubject with new region relays.');
       this.regionRelaySource.next(updates.map(u => ({ ...u })));
     });
+
+    // 🌡️ EMR Temperature
+    this.hubConnection.on('emrTemperatureUpdate', (data: any[]) => {
+      if (Array.isArray(data) && data.length > 0) {
+        const mappedData: EmrTemperature[] = data.map(item => ({
+          Name: item.Name ?? item.name ?? '',
+          Temperature: item.Temperature ?? item.temperature ?? '',
+          IsError: item.IsError ?? item.isError ?? false,
+          IsWarm: item.IsWarm ?? item.isWarm ?? false
+        }));
+        this.emrTemperatureSource.next(mappedData);
+      } else {
+        console.warn('⚠️ Invalid or empty emrTemperatureUpdate data, skipping:', data);
+        this.emrTemperatureSource.next([]);
+      }
+    });
+
 
 
 

@@ -182,6 +182,15 @@
   text-align: left;
 }
 
+.emr-temperature-section {
+  position: absolute;
+  left: 260px;
+}
+.emr-temperature-section .emr-temp-size {
+  padding: 2px;
+  display: contents;
+}
+
 .pulse-error {
   animation: pulseRed 1.5s infinite;
   border: 2px solid #dc3545;
