@@ -2,17 +2,19 @@
   <!-- 🌡️ Temperature Info -->
   <div *ngIf="temperatureInfo" class="text-center temperature-info-container mt-4">
     <div class="d-flex justify-content-center gap-3 flex-wrap">
-      <span class="badge text-dark fs-5 rounded-0" [ngClass]="{
+      <span class="badge text-dark fs-5" [ngClass]="{
         'bg-danger text-white pulse': isHot,
-        'bg-warning': !isHot
+        'temp': !isHot
       }" title="Temperature status">
         🌡️ Temperature: {{ temperatureInfo.temperature }} °C
       </span>
-      <span class="badge bg-info text-dark fs-5 rounded-0" title="Humidity level">
+      <span class="badge humidity text-dark fs-5" title="Humidity level">
         💧 Humidity: {{ temperatureInfo.humidity }} %
       </span>
     </div>
   </div>
+
+
 
   <!-- Temperature loading placeholder -->
   <div *ngIf="!temperatureInfo" class="text-center text-light mt-5">
@@ -28,7 +30,7 @@
       <div class="row chanells-container">
         <hr class="border-light line" />
         <div class="col p-0 " *ngFor="let ch of channels; trackBy: trackByOrder">
-          <div class="badge text-center channel-pill rounded-0" [ngClass]="{
+          <div class="badge text-center channel-pill" [ngClass]="{
             'bg-danger text-white pulse-error': ch.HaveError,
             'bg-secondary text-light opacity-50': ch.IsDIsable && !ch.HaveError,
             'bg-success text-white': !ch.IsDIsable && !ch.HaveError
@@ -43,6 +45,22 @@
     </div>
   </div>
 
+
+  <!-- moving animation -->
+  <div class="duck-container" *ngIf="currentAnimation === 'duck'">
+    <img src="assets/gif/duck2.gif" class="duck" alt="Duck" />
+  </div>
+
+  <div class="bat-container" *ngIf="currentAnimation === 'bat'">
+    <img src="assets/gif/bat-paniki.gif" class="bat" alt="Bat" />
+  </div>
+
+  <div class="squad-container" *ngIf="currentAnimation === 'squad'">
+    <img src="assets/gif/squad-team.gif" class="squad" alt="Squad Team" />
+  </div>
+
+
+
   <!-- Disco container -->
   <div class="disco-container" *ngIf="currentMessage">
     <img *ngIf="currentAnimation" [src]="currentAnimation" alt="Disco Animation" />
@@ -51,7 +69,7 @@
 
   <div *ngIf="robotSpeech" class="text-center mt-4 robot-container">
     <h5 class="text-light bg-dark p-3 rounded-4 border border-light d-inline-block">
-      <img src="assets/gif/o2-bubl.gif" alt="happy-robot" width="100" height="100">
+      <img src="assets/gif/emo.gif" alt="happy-robot" width="100" height="100">
 
       {{ robotSpeech }}
     </h5>
@@ -138,7 +156,7 @@
     <!-- List of regions -->
     <div class="row g-1">
       <div class="col-4 m-0 p-0 " *ngFor="let region of regionRelays; trackBy: trackByRegion">
-        <div class="card bg-dark text-white shadow-sm compact-card region-relay m-0 p-0">
+        <div class="card relay-background text-white shadow-sm compact-card region-relay m-0 p-0">
           <div class="fit-cell">
             <h6 class="card-title  m-0">{{ region.regionName }}</h6>
 
@@ -172,7 +190,7 @@
 
     <div class="row" *ngIf="emrtemperature.length > 0">
       <div class="emr-temp-size" *ngFor="let r of emrtemperature; trackBy: trackByEmrTemperature">
-        <div class="bg-dark text-white text-center p-1">
+        <div class="emr-temp-background text-white text-center p-1">
           <div class="fw-bold text-truncate">{{ r.Name }}</div>
           <div class="badge bg-light text-dark mt-1 rounded-0" [ngClass]="{
            'error': r.IsError,
@@ -215,8 +233,7 @@
     <div *ngIf="satellites.length > 0" class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4 ps-3">
       <div class="col satellite-box p-0" *ngFor="let sat of satellites; trackBy: trackByDegree">
         <div class="card satellite-card rounded-0 h-100 p-0 text-white border-0 position-relative overflow-hidden">
-          <div class="card-header rounded-0 p-0 bg-info text-dark text-center fs-5 fw-bold"
-            title="Satellite orbital position">
+          <div class="card-header rounded-0 p-0 text-dark text-center fs-5 fw-bold" title="Satellite orbital position">
             <span class="glow-icon">🛰️</span> {{ sat.Degree }}
           </div>
 

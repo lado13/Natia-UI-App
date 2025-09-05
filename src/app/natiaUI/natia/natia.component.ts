@@ -32,6 +32,10 @@ export class NatiaComponent implements OnInit {
   currentMessage: DiscoMessage | null = null;
   currentAnimation: string | null = null;
   emrtemperature: EmrTemperature[] = [];
+  animations: ('duck' | 'bat' | 'squad')[] = ['duck', 'bat', 'squad'];
+  currentAnimations: 'duck' | 'bat' | 'squad' = 'duck';
+  private index = 0;
+  private intervalId: any;
 
   constructor(
     private channelService: ChannelServiceService,
@@ -53,11 +57,24 @@ export class NatiaComponent implements OnInit {
     //card activate
     this.cards$ = this.signalRService.cardInfo$;
 
+    // Switch animations every 1 hour (3600000ms)
+    this.intervalId = setInterval(() => {
+      this.index = (this.index + 1) % this.animations.length;
+      this.currentAnimation = this.animations[this.index];
+    }, 3600000); // 1 hour
+
+
+
+
     // this.themeService.applyAutoTheme();
     // // Recheck every hour (or you can reduce this to every minute if needed)
     // setInterval(() => {
     //   this.themeService.applyAutoTheme();
     // }, 60 * 60 * 1000); // every hour
+  }
+
+  ngOnDestroy(): void {
+    clearInterval(this.intervalId);
   }
 
   //default load api
@@ -207,7 +224,7 @@ export class NatiaComponent implements OnInit {
         });
 
         this.signalRService.emrTemperature$.subscribe(data => {
-          if (data && Array.isArray(data) && data.length > 0) { 
+          if (data && Array.isArray(data) && data.length > 0) {
             // console.log('%c🛰️ Emr temperature update received:', 'color: green;', JSON.stringify(data, null, 2));
             this.emrtemperature = [...data];
             this.cdr.detectChanges();
@@ -230,7 +247,7 @@ export class NatiaComponent implements OnInit {
       case 'Night': this.currentAnimation = 'assets/gif/night.gif'; break;
       case 'Afternoon': this.currentAnimation = 'assets/gif/afternoon.gif'; break;
       case 'birthday': this.currentAnimation = 'assets/gif/birthday.gif'; break;
-      case 'NatiasCpuOverload': this.currentAnimation = 'assets/gif/cpu.gif'; break;
+      case 'NatiasCpuOverload': this.currentAnimation = 'assets/gif/overthinking-problem.gif'; break;
       case 'NatiasRamOverload': this.currentAnimation = 'assets/gif/cpu.gif'; break;
       case 'TemperatureProblem': this.currentAnimation = 'assets/gif/temperature.gif'; break;
       default: this.currentAnimation = '/animations/default.gif'; break;

@@ -5,7 +5,6 @@
     .channel-pill {
         padding: 0.6rem 0.75rem;
         font-size: 0.9rem;
-        border-radius: 8px;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
@@ -14,6 +13,7 @@
         box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
         width: 260px;
         border: 1px solid white;
+        border-radius: 8px;
     }
 
     .channel-pill:hover {
@@ -39,6 +39,12 @@
             padding: 12px;
             width: 194px;
 
+            .card-header {
+                color: rgb(255, 255, 255) !important;
+                background-color: #5d5d65;
+                border-radius: 8px 8px 0px 0px;
+            }
+
             .card-body {
                 border: 1px solid white;
 
@@ -46,9 +52,9 @@
                     width: -webkit-fill-available;
                 }
 
-                .sat-detail {
-                    border: 1px solid white;
-                }
+                // .sat-detail {
+                //     border: 1px solid white;
+                // }
 
             }
         }
@@ -89,6 +95,16 @@
 .temperature-info-container {
     float: inline-start;
     margin-left: 105px;
+
+    .temp {
+        background-color: rgb(0 210 184);
+        border-radius: 8px
+    }
+
+    .humidity {
+        background-color: rgb(20 158 186);
+        border-radius: 8px
+    }
 }
 
 //robot
@@ -207,6 +223,10 @@
     position: absolute;
     left: 65px;
 
+    .relay-background {
+        background-color: rgb(33 37 41 / 56%);
+    }
+
     .compact-card {
         height: auto;
     }
@@ -237,6 +257,10 @@
 .emr-temperature-section {
     position: absolute;
     left: 260px;
+
+    .emr-temp-background {
+        background-color: rgb(33 37 41 / 56%);
+    }
 
     .emr-temp-size {
         // width: 103px !important;
@@ -290,7 +314,7 @@
     }
 
     70% {
-        box-shadow: 0 0 0 12px rgba(220, 53, 69, 0);
+        box-shadow: 0 0 0 20px rgba(220, 53, 69, 0);
     }
 
     100% {
@@ -304,7 +328,7 @@
     }
 
     70% {
-        box-shadow: 0 0 0 15px rgba(255, 0, 0, 0);
+        box-shadow: 0 0 0 20px rgba(255, 0, 0, 0);
     }
 
     100% {
@@ -349,4 +373,116 @@
         font-size: 0.85rem;
         padding: 0.5rem;
     }
+}
+
+
+
+//duck animation
+.duck-container {
+    position: fixed;
+    bottom: 100px;
+    /* adjust height */
+    left: 0;
+    width: 100%;
+    pointer-events: none;
+    z-index: 9999;
+}
+
+.duck {
+    position: relative;
+    width: 120px;
+    /* adjust size */
+    animation: moveDuck 40s linear infinite;
+    /* 1800s = 30 minutes */
+}
+
+/* Moves across only in first 30s of cycle */
+@keyframes moveDuck {
+    0% {
+        left: -150px;
+    }
+
+    /* start off-screen left */
+    50% {
+        left: 100vw;
+    }
+
+    /* reach right side at 30s (≈1.7% of 1800s) */
+    100% {
+        left: 100vw;
+    }
+
+    /* stay off-screen until next cycle */
+}
+
+
+/* bat animation */
+.bat-container {
+    position: fixed;
+    left: 50%;
+    bottom: 0;
+    transform: translateX(-50%);
+    pointer-events: none;
+    z-index: 9999;
+    overflow: visible;
+}
+
+.bat {
+    width: 150px;
+    display: block;
+    will-change: transform, opacity;
+    transform: translateY(100vh);
+    /* start below viewport */
+    animation: flyUp 40s linear infinite;
+    /* full cycle = 40s */
+}
+
+/* bat flies slowly in first 20s, then disappears for rest of cycle */
+@keyframes flyUp {
+    0% {
+        transform: translateY(100vh);
+        opacity: 0;
+    }
+
+    /* start below screen */
+    5% {
+        opacity: 1;
+    }
+
+    /* fade in quickly */
+    50% {
+        transform: translateY(-120vh);
+        opacity: 1;
+    }
+
+    /* reach top at 20s */
+    100% {
+        transform: translateY(-120vh);
+        opacity: 0;
+    }
+
+    /* stay hidden until next 40s cycle */
+}
+
+//penguin animation
+.squad-container {
+    position: fixed;
+    bottom: 100px;   /* adjust vertical position */
+    left: 0;
+    width: 100%;
+    pointer-events: none;
+    z-index: 9999;
+}
+
+.squad {
+    position: relative;
+    width: 150px;   /* adjust size */
+    animation: moveSquad 40s linear infinite; /* full cycle = 40s */
+}
+
+/* Move from left to right like duck */
+@keyframes moveSquad {
+    0%   { left: -150px; }   /* start off-screen left */
+    50%  { left: 100vw; }    /* reach right side at 20s */
+    100% { left: 100vw; }    /* stay off-screen until next cycle */
 }
