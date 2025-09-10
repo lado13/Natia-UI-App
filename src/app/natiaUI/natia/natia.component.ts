@@ -13,6 +13,7 @@ import { CardInfoToActivate } from '../../../model/card-info-to-activate';
 import { RegionRelay } from '../../../model/region-relay';
 import { DiscoMessage } from '../../../model/disco-message';
 import { EmrTemperature } from '../../../model/emr-temperature';
+import { log } from 'node:console';
 
 @Component({
   selector: 'app-natia',
@@ -33,9 +34,10 @@ export class NatiaComponent implements OnInit {
   currentAnimation: string | null = null;
   emrtemperature: EmrTemperature[] = [];
   animations: ('duck' | 'bat' | 'squad')[] = ['duck', 'bat', 'squad'];
-  currentAnimations: 'duck' | 'bat' | 'squad' = 'duck';
+  currentAnimations: 'duck' | 'bat' | 'squad' | null = null;
   private index = 0;
   private intervalId: any;
+
 
   constructor(
     private channelService: ChannelServiceService,
@@ -57,13 +59,9 @@ export class NatiaComponent implements OnInit {
     //card activate
     this.cards$ = this.signalRService.cardInfo$;
 
-    // Switch animations every 1 hour (3600000ms)
-    this.intervalId = setInterval(() => {
-      this.index = (this.index + 1) % this.animations.length;
-      this.currentAnimation = this.animations[this.index];
-    }, 3600000); // 1 hour
-
-
+    //funny animation
+    this.startAnimationCycle();
+    
 
 
     // this.themeService.applyAutoTheme();
@@ -73,9 +71,37 @@ export class NatiaComponent implements OnInit {
     // }, 60 * 60 * 1000); // every hour
   }
 
-  ngOnDestroy(): void {
-    clearInterval(this.intervalId);
+
+
+  startAnimationCycle() {
+    this.showNextAnimation();
   }
+
+  //fanny animation
+  showNextAnimation() {
+    const animation = this.animations[this.index];
+    const now = new Date();
+    console.log(`🟢 Animation START: ${animation} at ${now.toLocaleTimeString()}`);
+
+    // Show the current animation
+    this.currentAnimations = animation;
+
+    // Animation duration: 40 seconds
+    setTimeout(() => {
+      // Hide the animation after it finishes
+      this.currentAnimations = null;
+      this.cdr.detectChanges(); // Trigger Angular change detection
+      const end = new Date();
+      console.log(`🔴 Animation END: ${animation} at ${end.toLocaleTimeString()}`);
+
+      // Wait 1 hour before showing the next animation
+      setTimeout(() => {
+        this.index = (this.index + 1) % this.animations.length;
+        this.showNextAnimation(); // Recursively show the next animation
+      }, 3600000); // 1 hour = 3600000ms
+    }, 40000); // 40 seconds = animation duration
+  }
+
 
   //default load api
   async loadDataWithRetry(retries = 3, delay = 2000): Promise<void> {
