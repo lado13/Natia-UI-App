@@ -1,68 +1,96 @@
-<div class="container-fluid py-4 pt-1 p-4 ps-5 pb-3">
+<div class="container-fluid py-4 pt-1 p-4 ps-5 pb-3 pe-5">
+
+
+
   <!-- 🌡️ Temperature Info -->
-  <div *ngIf="temperatureInfo" class="text-center temperature-info-container mt-4">
-    <div class="d-flex justify-content-center gap-3 flex-wrap">
-      <span class="badge text-dark fs-5" [ngClass]="{
-        'bg-danger text-white pulse': isHot,
-        'temp': !isHot
-      }" title="Temperature status">
-        🌡️ Temperature: {{ temperatureInfo.temperature }} °C
-      </span>
-      <span class="badge humidity text-dark fs-5" title="Humidity level">
-        💧 Humidity: {{ temperatureInfo.humidity }} %
-      </span>
+  <div *ngIf="temperatureInfo" class="temperature-info-container mt-4 container-fluid">
+
+    <div class="d-flex justify-content-between align-items-center flex-wrap">
+
+
+      <!-- ⏰ Watch (left side) -->
+      <div class="classic-watch shadow-sm rounded-3 px-3 py-1">
+        <i class="fa-solid fa-clock fa-fade fa-sm" style="color: #fff70a;"></i>
+        {{ currentTime | date:'hh:mm:ss a' }}
+      </div>
+
+
+
+      <!-- 🌡️ Temperature + Humidity (right side) -->
+      <div class="d-flex justify-content-center gap-3 flex-wrap">
+
+        <i class="fa-solid fa-bell fa-shake bell-temp-icon" *ngIf="isHot" style="color: #deeb1e;"></i>
+
+        <span class="badge text-light fs-5" [ngClass]="{
+              'natia-temp-error pulse': isHot,
+              'temp': !isHot
+            }" title="Temperature status">
+          <i *ngIf="isHot" class="fa-solid fa-temperature-high fa-bounce" style="color: #ffffff;"></i>
+          <i *ngIf="!isHot" class="fa-solid fa-temperature-low" style="color: #24f5dc;"></i>
+          {{ temperatureInfo.temperature }} °C
+        </span>
+
+        <span class="badge humidity text-light fs-5" title="Humidity level">
+          <i class="fa-solid fa-water fa-fade" style="color: #00aaff;"></i>
+          {{ temperatureInfo.humidity }} %
+        </span>
+
+      </div>
     </div>
   </div>
 
 
 
+
   <!-- Temperature loading placeholder -->
   <div *ngIf="!temperatureInfo" class="text-center text-light mt-5">
+    <img class="loader" src="assets/svg/loader.svg" alt="Loading...">
     ⏳ Loading temperature info...
   </div>
 
   <!-- 📺 Channel List -->
   <div class="text-center">
     <div *ngIf="channels.length === 0" class="text-center text-light mt-5">
+      <img class="loader" src="assets/svg/loader.svg" alt="Loading...">
       ⏳ Loading channels...
     </div>
+
     <div *ngIf="channels.length > 0" class="container-fluid">
+
       <div class="row chanells-container">
         <hr class="border-light line" />
+
         <div class="col p-0 " *ngFor="let ch of channels; trackBy: trackByOrder">
           <div class="badge text-center channel-pill" [ngClass]="{
-            'bg-danger text-white pulse-error': ch.HaveError,
-            'bg-secondary text-light opacity-50': ch.IsDIsable && !ch.HaveError,
-            'bg-success text-white': !ch.IsDIsable && !ch.HaveError
+            'natia-error pulse-error': ch.HaveError,
+            'natia-test text-light opacity-50': ch.IsDIsable && !ch.HaveError,
+            'natia-success': !ch.IsDIsable && !ch.HaveError
           }"
             title="{{ ch.HaveError ? 'Channel has an error' : ch.IsDIsable ? 'Channel is disabled' : 'Channel is active' }}">
             <span class="channel-name float-start fw-bolder">
-              {{ ch.Order }}. {{ ch.ChanellName }}
+              <span class="channel-number"> {{ ch.Order }}.</span> {{ ch.ChanellName }}
             </span>
           </div>
+
         </div>
       </div>
     </div>
   </div>
 
+  <!-- Duck -->
+  <div class="duck-container" *ngIf="currentAnimations === 'duck'">
+    <img src="assets/gif/duck2.gif" class="duck" alt="Duck" />
+  </div>
 
- <!-- Duck -->
-<div class="duck-container" *ngIf="currentAnimations === 'duck'">
-  <img src="assets/gif/duck2.gif" class="duck" alt="Duck" />
-</div>
+  <!-- Bat -->
+  <div class="bat-container" *ngIf="currentAnimations === 'bat'">
+    <img src="assets/gif/bat-paniki.gif" class="bat" alt="Bat" />
+  </div>
 
-<!-- Bat -->
-<div class="bat-container" *ngIf="currentAnimations === 'bat'">
-  <img src="assets/gif/bat-paniki.gif" class="bat" alt="Bat" />
-</div>
-
-<!-- Squad -->
-<div class="squad-container" *ngIf="currentAnimations === 'squad'">
-  <img src="assets/gif/squad-team.gif" class="squad" alt="Squad Team" />
-</div>
-
-
-
+  <!-- Squad -->
+  <div class="squad-container" *ngIf="currentAnimations === 'squad'">
+    <img src="assets/gif/sad-penguins.gif" class="squad" alt="Squad Team" />
+  </div>
 
   <!-- Disco container -->
   <div class="disco-container" *ngIf="currentMessage">
@@ -71,10 +99,10 @@
   </div>
 
   <div *ngIf="robotSpeech" class="text-center mt-4 robot-container">
+
     <h5 class="text-light bg-dark p-3 rounded-4 border border-light d-inline-block">
       <img src="assets/gif/emo.gif" alt="happy-robot" width="100" height="100">
-
-      {{ robotSpeech }}
+      {{ robotSpeech }} <i class="fa-solid fa-exclamation bell-icon"></i>
     </h5>
   </div>
 
@@ -82,6 +110,12 @@
 
     <!-- Channels With Problems -->
     <ng-container *ngIf="opticChannels$ | async as channels">
+      <!-- Loader / Empty state -->
+      <div *ngIf="channels.length === 0" class="text-white-50 small text-center">
+        <img class="loader" src="assets/svg/loader.svg" alt="Loading...">
+        No region relays available.
+      </div>
+
       <div class=" float-end" *ngIf="channels.length > 0">
         <div class="table-responsive">
           <h6 class="text-light fw-bold m-0 fs-6 mb-2 channel-problem-title">
@@ -113,8 +147,8 @@
                 </td>
                 <td class="fit-cell transparent-table problem-value">
                   <span class="badge px-2 py-1 status-cell rounded-0" [ngClass]="{
-                  'bg-warning text-dark bg-opacity-75': channel.status === 'low bittrate',
-                  'bg-danger bg-opacity-75': channel.status !== 'low bittrate'
+                  'natia-warn text-dark bg-opacity-75': channel.status === 'low bittrate',
+                  'natia-temp-error bg-opacity-75': channel.status !== 'low bittrate'
                 }">
                     {{ channel?.status | titlecase }}
                   </span>
@@ -153,6 +187,7 @@
   <div class="region-relay-section">
     <!-- Empty state -->
     <div *ngIf="regionRelays.length === 0" class="text-white-50 small">
+      <img class="loader" src="assets/svg/loader.svg">
       No region relays available.
     </div>
 
@@ -165,18 +200,17 @@
 
             <!-- RelayInfos badges -->
             <div *ngFor="let info of region.relayInfos; trackBy: trackByRelayInfo" class="regionrelay-mer">
-              <span class="bg-primary tiny-badge">{{ info.frequecyOrder }}</span>
+              <span class="tiny-badge">{{ info.frequecyOrder }}</span>
 
               <span class="tiny-badge" [ngClass]="{
-                    'error': info.isHaveProblem,
-                    'warn': !info.isHaveProblem && info.isWarning,
-                    'bg-success': !info.isHaveProblem && !info.isWarning
+                    'natia-temp-error': info.isHaveProblem,
+                    'natia-warn': !info.isHaveProblem && info.isWarning,
+                    'natia-success': !info.isHaveProblem && !info.isWarning
                              }">
                 {{ info.mer }}
               </span>
 
             </div>
-
           </div>
         </div>
       </div>
@@ -188,93 +222,77 @@
   <!-- emr region temperature -->
   <div class="emr-temperature-section">
     <div *ngIf="emrtemperature.length === 0" class="text-white-50 small text-center">
+      <img class="loader" src="assets/svg/loader.svg">
       No region EMR temperature available.
     </div>
 
-    <div class="row" *ngIf="emrtemperature.length > 0">
+    <div class="row emr-temp-row" *ngIf="emrtemperature.length > 0">
       <div class="emr-temp-size" *ngFor="let r of emrtemperature; trackBy: trackByEmrTemperature">
         <div class="emr-temp-background text-white text-center p-1">
           <div class="fw-bold text-truncate">{{ r.Name }}</div>
-          <div class="badge bg-light text-dark mt-1 rounded-0" [ngClass]="{
-           'error': r.IsError,
-           'warn': !r.IsError && r.IsWarm,
-           'bg-success': !r.IsError && !r.IsWarm
-         }">{{ r.Temperature }}</div>
+          <div class="badge bg-light text-dark mt-1 rounded-0">
+            {{ r.Temperature }}</div>
           <div class="badge mt-1 rounded-0" [ngClass]="{
-           'error': r.IsError,
-           'warn': !r.IsError && r.IsWarm,
-           'bg-success': !r.IsError && !r.IsWarm
+           'natia-temp-error': r.IsError,
+           'natia-warn': !r.IsError && r.IsWarm,
+           'natia-success': !r.IsError && !r.IsWarm
          }">
             {{ r.IsError ? 'Hot' : (r.IsWarm ? 'Warm' : 'Normal') }}
           </div>
+
         </div>
       </div>
     </div>
   </div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
   <hr class="border-light underline line" />
 
   <!-- 📡 Satellite Overview -->
   <div class="text-center container-fluid satellite-container">
     <div *ngIf="satellites.length === 0" class="text-center text-light mt-5">
+      <img class="loader" src="assets/svg/loader.svg" alt="Loading...">
       ⏳ Loading satellites...
     </div>
+
     <div *ngIf="satellites.length > 0" class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4 ps-3">
       <div class="col satellite-box p-0" *ngFor="let sat of satellites; trackBy: trackByDegree">
         <div class="card satellite-card rounded-0 h-100 p-0 text-white border-0 position-relative overflow-hidden">
           <div class="card-header rounded-0 p-0 text-dark text-center fs-5 fw-bold" title="Satellite orbital position">
-            <span class="glow-icon">🛰️</span> {{ sat.Degree }}
+            <span
+              *ngIf="sat.Degree && !['Relay','Optic','ENCODERS','MULTISWITCHES','MUKHIANII','MUKHIANI I','MUKHIANI II'].includes(sat.Degree.toString())"
+              class="glow-icon">
+              🛰️
+            </span>
+            {{ sat.Degree }}
           </div>
 
           <div class="card-body d-flex flex-column p-0">
             <div *ngFor="let d of sat.details" class="sat-detail d-flex p-1">
-
               <!-- SymbolRate -->
-              <span class="badge satellite-value rounded-0" [class.error]="d.HaveError"
-                [class.warn]="!d.HaveError && d.HaveWarn" [class.bg-success]="!d.HaveError && !d.HaveWarn" [title]="d.HaveError 
+              <span class="badge satellite-value rounded-0" [class.natia-error]="d.HaveError"
+                [class.natia-warn]="!d.HaveError && d.HaveWarn" [class.natia-success]="!d.HaveError && !d.HaveWarn"
+                [title]="d.HaveError 
                 ? 'Transponder has an error' 
                 : d.HaveWarn 
                   ? 'Transponder warning' 
                   : 'Operational'">
                 {{ d.SymbolRate }}
               </span>
-
               <!-- MER -->
               <span class="badge rounded-0" *ngIf="d.mer !== 'N/A' && d.mer !== null" [class.error]="d.HaveError"
-                [class.warn]="!d.HaveError && d.HaveWarn" [class.bg-secondary]="!d.HaveError && !d.HaveWarn">
+                [class.natia-warn]="!d.HaveError && d.HaveWarn" [class.symbolRate]="!d.HaveError && !d.HaveWarn">
                 {{ d.mer }}
               </span>
-
             </div>
 
             <div *ngIf="sat.details.length === 0" class="text-center text-light p-2">
               No transponder details available
             </div>
+
           </div>
-
-
         </div>
       </div>
     </div>
   </div>
-
-
-
-
-
 
 </div>

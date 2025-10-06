@@ -1,5 +1,5 @@
 
-import { Component, OnInit, ChangeDetectorRef, NgZone } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef, NgZone, ElementRef, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ChannelServiceService } from '../../../service/channel-service.service';
 import { SignalRService } from '../../../service/signal-rservice.service';
@@ -36,7 +36,12 @@ export class NatiaComponent implements OnInit {
   animations: ('duck' | 'bat' | 'squad')[] = ['duck', 'bat', 'squad'];
   currentAnimations: 'duck' | 'bat' | 'squad' | null = null;
   private index = 0;
-  private intervalId: any;
+  currentTime: Date = new Date();
+  private timer: any;
+
+
+  @ViewChild('tempAlertAudio') tempAlertAudio!: ElementRef<HTMLAudioElement>;
+  private lastIsHot = false; // track previous state to avoid repeated alerts
 
 
   constructor(
@@ -48,10 +53,8 @@ export class NatiaComponent implements OnInit {
   ) { }
 
   async ngOnInit(): Promise<void> {
-    console.log('🚀 NatiaComponent ngOnInit started');
     await this.loadDataWithRetry();
     await this.initSignalR();
-    console.log('🚀 NatiaComponent ngOnInit completed');
 
     //channels with problem
     this.opticChannels$ = this.signalRService.opticChannelProblem$;
@@ -61,24 +64,30 @@ export class NatiaComponent implements OnInit {
 
     //funny animation
     this.startAnimationCycle();
-    
 
 
-    // this.themeService.applyAutoTheme();
-    // // Recheck every hour (or you can reduce this to every minute if needed)
-    // setInterval(() => {
-    //   this.themeService.applyAutoTheme();
-    // }, 60 * 60 * 1000); // every hour
+    // check theme immediately
+    this.themeService.checkTimeAndSetTheme();
+
+    // re-check every 5 minutes (in case user keeps page open)
+    setInterval(() => {
+      this.themeService.checkTimeAndSetTheme();
+    }, 5 * 60 * 1000);
+
+    this.timer = setInterval(() => {
+      this.currentTime = new Date();
+    }, 1000);
+
   }
 
-
-
-  startAnimationCycle() {
-    this.showNextAnimation();
+  ngOnDestroy(): void {
+    if (this.timer) {
+      clearInterval(this.timer);
+    }
   }
 
   //fanny animation
-  showNextAnimation() {
+  startAnimationCycle() {
     const animation = this.animations[this.index];
     const now = new Date();
     console.log(`🟢 Animation START: ${animation} at ${now.toLocaleTimeString()}`);
@@ -97,7 +106,7 @@ export class NatiaComponent implements OnInit {
       // Wait 1 hour before showing the next animation
       setTimeout(() => {
         this.index = (this.index + 1) % this.animations.length;
-        this.showNextAnimation(); // Recursively show the next animation
+        this.startAnimationCycle(); // Recursively show the next animation
       }, 3600000); // 1 hour = 3600000ms
     }, 40000); // 40 seconds = animation duration
   }
@@ -112,7 +121,6 @@ export class NatiaComponent implements OnInit {
         const data = await firstValueFrom(this.channelService.getData());
         let rawChannels = data.ChanellInfo || [];
         if (!Array.isArray(rawChannels)) {
-          console.warn('⚠️ API channels data is not an array:', rawChannels);
           rawChannels = [];
         }
         this.channels = rawChannels.map((item: any) => ({
@@ -126,7 +134,6 @@ export class NatiaComponent implements OnInit {
         //satellite
         let rawSatellites = data.SatelliteView || [];
         if (!Array.isArray(rawSatellites)) {
-          // console.warn('⚠️ API satellites data is not an array:', rawSatellites);
           rawSatellites = [];
         }
         this.satellites = rawSatellites.map((item: any) => ({
@@ -282,13 +289,11 @@ export class NatiaComponent implements OnInit {
 
   //updating channels how have error
   updateChannelsWithError(updatedChannels: TVChannel[]): void {
-    console.log('🔄 Updating channels with error, current channels:', JSON.stringify(this.channels, null, 2));
     if (updatedChannels.length > 0) {
       this.channels = [...updatedChannels];
     } else {
       console.warn('⚠️ chanellInfoUpdate is empty, preserving current channels');
     }
-    console.log('🔄 Updated channels:', JSON.stringify(this.channels, null, 2));
   }
 
   //temperature logic

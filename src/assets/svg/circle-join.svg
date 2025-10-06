@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000" width="100%" height="100%" preserveAspectRatio="xMidYMid slice" aria-label="Creative animated SVG background">
   <defs>
-    <!-- Rotating multi-stop gradient wash -->
+   <!-- Rotating multi-stop gradient wash -->
     <linearGradient id="wash" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="1000" y2="0">
       <stop offset="0%"  stop-color="#7C3AED"/>
       <stop offset="50%" stop-color="#06B6D4"/>
@@ -18,17 +18,21 @@
       <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
     </radialGradient>
 
-    <!-- Gooey filter for blobs -->
+    <!-- Gooey filter -->
     <filter id="goo" x="-50%" y="-50%" width="200%" height="200%">
-      <feGaussianBlur in="SourceGraphic" stdDeviation="12" result="b"/>
-      <feColorMatrix in="b" type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 22 -12" result="g"/>
+      <feGaussianBlur in="SourceGraphic" stdDeviation="14" result="b"/>
+      <feColorMatrix in="b" type="matrix"
+        values="1 0 0 0 0
+                0 1 0 0 0
+                0 0 1 0 0
+                0 0 0 22 -12" result="g"/>
       <feBlend in="SourceGraphic" in2="g"/>
     </filter>
 
     <!-- Subtle animated film grain -->
     <filter id="grain" x="-20%" y="-20%" width="140%" height="140%">
       <feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="2" stitchTiles="stitch" seed="3">
-        <animate attributeName="seed" from="0" to="100" dur="12s" repeatCount="indefinite"/>
+        <animate attributeName="seed" from="0" to="100" dur="20s" repeatCount="indefinite"/>
       </feTurbulence>
       <feColorMatrix type="saturate" values="0"/>
     </filter>
@@ -41,24 +45,32 @@
   <g filter="url(#goo)" opacity="0.65">
     <g>
       <circle r="180" fill="url(#blobA)">
-        <animateMotion dur="32s" repeatCount="indefinite" path="M 200 200 C 500 0 500 1000 800 800"/>
-        <animate attributeName="r" values="160;200;160" dur="16s" repeatCount="indefinite"/>
+        <animateMotion dur="48s" repeatCount="indefinite" keySplines="0.42 0 0.58 1" keyTimes="0;1" calcMode="spline"
+          path="M 200 200 C 500 100 600 900 800 800 C 700 400 400 600 200 200"/>
+        <animate attributeName="r" values="160;200;160" dur="22s" repeatCount="indefinite" calcMode="spline"
+          keySplines="0.42 0 0.58 1" keyTimes="0;1"/>
       </circle>
     </g>
+
     <g>
       <circle r="220" fill="url(#blobB)">
-        <animateMotion dur="40s" repeatCount="indefinite" path="M 800 300 C 200 150 200 850 500 700"/>
-        <animate attributeName="r" values="190;260;190" dur="18s" repeatCount="indefinite"/>
+        <animateMotion dur="60s" repeatCount="indefinite" keySplines="0.42 0 0.58 1" keyTimes="0;1" calcMode="spline"
+          path="M 800 300 C 400 200 200 800 500 700 C 650 850 900 400 800 300"/>
+        <animate attributeName="r" values="190;260;190" dur="28s" repeatCount="indefinite" calcMode="spline"
+          keySplines="0.42 0 0.58 1" keyTimes="0;1"/>
       </circle>
     </g>
+
     <g>
       <circle r="140" fill="url(#blobB)">
-        <animateMotion dur="28s" repeatCount="indefinite" path="M 300 900 C 850 650 150 350 700 120"/>
-        <animate attributeName="r" values="120;180;120" dur="12s" repeatCount="indefinite"/>
+        <animateMotion dur="40s" repeatCount="indefinite" keySplines="0.42 0 0.58 1" keyTimes="0;1" calcMode="spline"
+          path="M 300 900 C 700 700 300 300 700 120 C 500 400 400 700 300 900"/>
+        <animate attributeName="r" values="120;180;120" dur="20s" repeatCount="indefinite" calcMode="spline"
+          keySplines="0.42 0 0.58 1" keyTimes="0;1"/>
       </circle>
     </g>
   </g>
 
   <!-- Grain overlay -->
-  <rect x="-50" y="-50" width="1100" height="1100" filter="url(#grain)" opacity="0.06"/>
+  <rect x="-50" y="-50" width="1100" height="1100" filter="url(#grain)" opacity="0.05"/>
 </svg>

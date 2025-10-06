@@ -1,5 +1,16 @@
-body {
-  background-image: url("../src/assets/svg/waves.svg");
+/* styles.scss */
+/* Default light/day background */
+.day-theme {
+  background-image: url("../src/assets/svg/circle-join.svg");
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: left;
+  min-height: 100vh;
+}
+
+/* Night background */
+.night-theme {
+  background-image: url("../src/assets/svg/waves.svg"); /* <- create darker version */
   background-size: cover;
   background-repeat: no-repeat;
   background-position: left;

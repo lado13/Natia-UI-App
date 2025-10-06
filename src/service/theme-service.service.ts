@@ -1,33 +1,36 @@
-import { Injectable } from '@angular/core';
+import { Injectable, Renderer2, RendererFactory2 } from '@angular/core';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ThemeServiceService {
 
-  constructor() { }
+  private renderer: Renderer2;
+  private isDay: boolean = true;
 
-  applyAutoTheme(): void {
+  constructor(rendererFactory: RendererFactory2) {
+    this.renderer = rendererFactory.createRenderer(null, null);
+  }
+
+  checkTimeAndSetTheme(): void {
     const hour = new Date().getHours();
+    this.isDay = hour >= 7 && hour < 19; // day between 7AM - 7PM
 
-    // Dark mode: 10 PM (22) to 10 AM (10)
-    const isDarkMode = hour >= 22 || hour < 10;
-
-    if (isDarkMode) {
-      this.setDarkMode();
+    if (this.isDay) {
+      this.setDayTheme();
     } else {
-      this.setLightMode();
+      this.setNightTheme();
     }
   }
 
-  setDarkMode(): void {
-    document.body.classList.add('dark-mode');
-    document.body.classList.remove('light-mode');
+  private setDayTheme(): void {
+    this.renderer.removeClass(document.body, 'night-theme');
+    this.renderer.addClass(document.body, 'day-theme');
   }
 
-  setLightMode(): void {
-    document.body.classList.add('light-mode');
-    document.body.classList.remove('dark-mode');
+  private setNightTheme(): void {
+    this.renderer.removeClass(document.body, 'day-theme');
+    this.renderer.addClass(document.body, 'night-theme');
   }
 
 }

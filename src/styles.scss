@@ -1,34 +1,29 @@
-body {
-  background-image: url('../src/assets/svg/waves.svg');
+// body {
+//   background-image: url('../src/assets/svg/waves.svg');
+//   background-size: cover;
+//   background-repeat: no-repeat;
+//   background-position: left;
+//   min-height: 100vh;
+// }
+
+
+
+/* styles.scss */
+
+/* Default light/day background */
+.day-theme {
+  background-image: url('../src/assets/svg/circle-join.svg');
   background-size: cover;
   background-repeat: no-repeat;
   background-position: left;
   min-height: 100vh;
 }
 
-
-
-// /* Light mode (default) */
-// body.light-mode {
-//   background-image: url('../src/assets/svg/liveBackground.svg');
-//   background-size: cover;
-//   background-repeat: no-repeat;
-//   background-position: left;
-//   min-height: 100vh;
-//   color: #000;
-// }
-
-// /* Dark mode */
-// body.dark-mode {
-//   background-image: url('assets/svg/liveBackground-dark.svg');
-//   background-size: cover;
-//   background-repeat: no-repeat;
-//   background-position: left;
-//   min-height: 100vh;
-//   color: #fff;
-// }
-
-// /* Optional: smooth transition between themes */
-// body {
-//   transition: background-image 0.5s ease, background-color 0.5s ease, color 0.5s ease;
-// }
+/* Night background */
+.night-theme {
+  background-image: url('../src/assets/svg/waves.svg'); /* <- create darker version */
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: left;
+  min-height: 100vh;
+}
