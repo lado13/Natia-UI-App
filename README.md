@@ -1,6 +1,6 @@
 # 📺 NatiaUIApp
 
-NatiaUIApp is an Angular 17 project designed to provide a modern and dynamic UI for managing and displaying live data such as TV channels, satellites, and real-time updates via SignalR.
+NatiaUIApp is an Angular 17 project built as a modern television streaming platform UI, designed for managing and displaying live data such as TV channels, satellites, and real-time updates through SignalR.
 
 ---
 
