@@ -17,9 +17,11 @@ NatiaUIApp is an Angular 17 project built as a modern television streaming platf
 ## 🖼️ Screenshots
 
 ### Web View
+
+## Dark Theme
 ![Screenshot](/src/screenshots/Screenshot1.png)
 
-
+## Light Theme
 ![Screenshot](/src/screenshots/Screenshot2.png)
 
 *(Add your actual screenshots in a `/screenshots` folder inside the project)*
