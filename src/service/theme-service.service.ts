@@ -14,7 +14,7 @@ export class ThemeServiceService {
 
   checkTimeAndSetTheme(): void {
     const hour = new Date().getHours();
-    this.isDay = hour >= 7 && hour < 19; // day between 7AM - 7PM
+    this.isDay = hour >= 11 && hour < 18; // day between 11AM - 6PM
 
     if (this.isDay) {
       this.setDayTheme();

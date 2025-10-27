@@ -10,9 +10,56 @@
 
 /* Night background */
 .night-theme {
-  background-image: url("../src/assets/svg/waves.svg"); /* <- create darker version */
+  background-image: url("../src/assets/svg/waves.svg");
+  /* <- create darker version */
   background-size: cover;
   background-repeat: no-repeat;
   background-position: left;
   min-height: 100vh;
+}
+
+/* styles.scss or component scss */
+/* Day theme robot container */
+.day-theme .robot-container h5 {
+  background-color: #eeeedc;
+  color: black;
+  border: 1px solid #ccc;
+  -webkit-backdrop-filter: none;
+          backdrop-filter: none;
+  border: 1px solid black;
+}
+
+/* Night theme robot container */
+.night-theme .robot-container h5 {
+  background-color: rgba(24, 23, 34, 0.9058823529);
+  color: white;
+  border: 1px solid #fff;
+  -webkit-backdrop-filter: blur(5px);
+          backdrop-filter: blur(5px);
+}
+
+.day-theme .bell-icon {
+  color: #00ecff;
+}
+
+.night-theme .bell-icon {
+  color: #ffffff !important;
+}
+
+.night-theme .channel-pill {
+  border: none !important;
+}
+
+.day-theme .symbolRate {
+  background-color: #f3ffda !important;
+  color: #000000 !important;
+}
+
+.day-theme .emr-temp {
+  background-color: #f3ffda !important;
+  color: #000000 !important;
+}
+
+.day-theme .card-header {
+  background-color: transparent !important;
 }/*# sourceMappingURL=styles.css.map */

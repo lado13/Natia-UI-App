@@ -10,8 +10,7 @@
 
       <!-- ⏰ Watch (left side) -->
       <div class="classic-watch shadow-sm rounded-3 px-3 py-1">
-        <i class="fa-solid fa-clock fa-fade fa-sm" style="color: #fff70a;"></i>
-        {{ currentTime | date:'hh:mm:ss a' }}
+        ⏰{{ currentTime | date:'HH:mm:ss' }}
       </div>
 
 
@@ -68,7 +67,7 @@
           }"
             title="{{ ch.HaveError ? 'Channel has an error' : ch.IsDIsable ? 'Channel is disabled' : 'Channel is active' }}">
             <span class="channel-name float-start fw-bolder">
-              <span class="channel-number"> {{ ch.Order }}.</span> {{ ch.ChanellName }}
+              <span class="channel-number"> {{ ch.Order }} <i class="fa-solid fa-minus"></i></span> {{ ch.ChanellName }}
             </span>
           </div>
 
@@ -98,23 +97,88 @@
     <p *ngIf="currentMessage">{{ currentMessage.message }}</p>
   </div>
 
-  <div *ngIf="robotSpeech" class="text-center mt-4 robot-container">
 
-    <h5 class="text-light bg-dark p-3 rounded-4 border border-light d-inline-block">
-      <img src="assets/gif/emo.gif" alt="happy-robot" width="100" height="100">
-      {{ robotSpeech }} <i class="fa-solid fa-exclamation bell-icon"></i>
+  <!-- robot say -->
+  <div *ngIf="robotSpeech" class="text-center mt-4 robot-container">
+    <i class="fa-solid fa-message fa-bounce bell-icon"></i>
+    <h5 class="p-3 rounded-3 d-inline-block">
+      <img class="robot-img" src="assets/gif/boolb-robot.gif" alt="happy-robot" width="100" height="100">
+      {{ robotSpeech }} 
     </h5>
+  </div>
+
+
+
+  <div class="region-relay-section">
+    <!-- Empty state -->
+    <div *ngIf="regionRelays.length === 0" class="text-white-50 small">
+      <img class="loader" src="assets/svg/loader.svg">
+      No region relays available.
+    </div>
+
+    <!-- List of regions -->
+    <div class="row g-1">
+      <div class="col-4 m-0 p-0 " *ngFor="let region of regionRelays; trackBy: trackByRegion">
+        <div class="card relay-background text-white shadow-sm compact-card region-relay m-0 p-0">
+          <div class="fit-cell">
+            <h6 class="card-title  m-0">{{ region.regionName }}</h6>
+
+            <!-- RelayInfos badges -->
+            <div *ngFor="let info of region.relayInfos; trackBy: trackByRelayInfo" class="regionrelay-mer">
+              <span class="tiny-badge">{{ info.frequecyOrder }}</span>
+
+              <span class="tiny-badge" [ngClass]="{
+                    'natia-temp-error': info.isHaveProblem,
+                    'natia-warn': !info.isHaveProblem && info.isWarning,
+                    'natia-success': !info.isHaveProblem && !info.isWarning
+                             }">
+                {{ info.mer }}
+              </span>
+
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+
+  <!-- emr region temperature -->
+  <div class="emr-temperature-section">
+    <div *ngIf="emrtemperature.length === 0" class="text-white-50 small text-center">
+      <img class="loader" src="assets/svg/loader.svg">
+      No region EMR temperature available.
+    </div>
+
+    <div class="row emr-temp-row" *ngIf="emrtemperature.length > 0">
+      <div class="emr-temp-size" *ngFor="let r of emrtemperature; trackBy: trackByEmrTemperature">
+        <div class="emr-temp-background text-white text-center p-1">
+          <div class="fw-bold text-truncate">{{ r.Name }}</div>
+          <div class="badge emr-temp mt-1 rounded-0">
+            {{ r.Temperature }}</div>
+          <div class="badge mt-1 rounded-0" [ngClass]="{
+           'natia-temp-error': r.IsError,
+           'natia-warn': !r.IsError && r.IsWarm,
+           'natia-success': !r.IsError && !r.IsWarm
+         }">
+            {{ r.IsError ? 'Hot' : (r.IsWarm ? 'Warm' : 'Normal') }}
+          </div>
+
+        </div>
+      </div>
+    </div>
   </div>
 
   <div class="d-block container-fluid pe-5 problem-container">
 
     <!-- Channels With Problems -->
     <ng-container *ngIf="opticChannels$ | async as channels">
-      <!-- Loader / Empty state -->
+      <!-- Loader / Empty state
       <div *ngIf="channels.length === 0" class="text-white-50 small text-center">
         <img class="loader" src="assets/svg/loader.svg" alt="Loading...">
-        No region relays available.
-      </div>
+        No Channels With Problems available.
+      </div> -->
 
       <div class=" float-end" *ngIf="channels.length > 0">
         <div class="table-responsive">
@@ -184,66 +248,6 @@
     </div>
   </div>
 
-  <div class="region-relay-section">
-    <!-- Empty state -->
-    <div *ngIf="regionRelays.length === 0" class="text-white-50 small">
-      <img class="loader" src="assets/svg/loader.svg">
-      No region relays available.
-    </div>
-
-    <!-- List of regions -->
-    <div class="row g-1">
-      <div class="col-4 m-0 p-0 " *ngFor="let region of regionRelays; trackBy: trackByRegion">
-        <div class="card relay-background text-white shadow-sm compact-card region-relay m-0 p-0">
-          <div class="fit-cell">
-            <h6 class="card-title  m-0">{{ region.regionName }}</h6>
-
-            <!-- RelayInfos badges -->
-            <div *ngFor="let info of region.relayInfos; trackBy: trackByRelayInfo" class="regionrelay-mer">
-              <span class="tiny-badge">{{ info.frequecyOrder }}</span>
-
-              <span class="tiny-badge" [ngClass]="{
-                    'natia-temp-error': info.isHaveProblem,
-                    'natia-warn': !info.isHaveProblem && info.isWarning,
-                    'natia-success': !info.isHaveProblem && !info.isWarning
-                             }">
-                {{ info.mer }}
-              </span>
-
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-
-
-  <!-- emr region temperature -->
-  <div class="emr-temperature-section">
-    <div *ngIf="emrtemperature.length === 0" class="text-white-50 small text-center">
-      <img class="loader" src="assets/svg/loader.svg">
-      No region EMR temperature available.
-    </div>
-
-    <div class="row emr-temp-row" *ngIf="emrtemperature.length > 0">
-      <div class="emr-temp-size" *ngFor="let r of emrtemperature; trackBy: trackByEmrTemperature">
-        <div class="emr-temp-background text-white text-center p-1">
-          <div class="fw-bold text-truncate">{{ r.Name }}</div>
-          <div class="badge bg-light text-dark mt-1 rounded-0">
-            {{ r.Temperature }}</div>
-          <div class="badge mt-1 rounded-0" [ngClass]="{
-           'natia-temp-error': r.IsError,
-           'natia-warn': !r.IsError && r.IsWarm,
-           'natia-success': !r.IsError && !r.IsWarm
-         }">
-            {{ r.IsError ? 'Hot' : (r.IsWarm ? 'Warm' : 'Normal') }}
-          </div>
-
-        </div>
-      </div>
-    </div>
-  </div>
 
   <hr class="border-light underline line" />
 
@@ -257,7 +261,7 @@
     <div *ngIf="satellites.length > 0" class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4 ps-3">
       <div class="col satellite-box p-0" *ngFor="let sat of satellites; trackBy: trackByDegree">
         <div class="card satellite-card rounded-0 h-100 p-0 text-white border-0 position-relative overflow-hidden">
-          <div class="card-header rounded-0 p-0 text-dark text-center fs-5 fw-bold" title="Satellite orbital position">
+          <div class="card-header rounded-0 p-0 text-center fs-5 fw-bold" title="Satellite orbital position">
             <span
               *ngIf="sat.Degree && !['Relay','Optic','ENCODERS','MULTISWITCHES','MUKHIANII','MUKHIANI I','MUKHIANI II'].includes(sat.Degree.toString())"
               class="glow-icon">
