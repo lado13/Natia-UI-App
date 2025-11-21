@@ -14,11 +14,12 @@ import { RegionRelay } from '../../../model/region-relay';
 import { DiscoMessage } from '../../../model/disco-message';
 import { EmrTemperature } from '../../../model/emr-temperature';
 import { log } from 'node:console';
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-natia',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, RouterModule],
   templateUrl: './natia.component.html',
   styleUrls: ['./natia.component.scss']
 })
@@ -38,10 +39,9 @@ export class NatiaComponent implements OnInit {
   private index = 0;
   currentTime: Date = new Date();
   private timer: any;
+  newYearActive = false;
+  snowflakes: { id: number; x: number; y: number; size: number; speed: number }[] = [];
 
-
-  @ViewChild('tempAlertAudio') tempAlertAudio!: ElementRef<HTMLAudioElement>;
-  private lastIsHot = false; // track previous state to avoid repeated alerts
 
 
   constructor(
@@ -65,6 +65,8 @@ export class NatiaComponent implements OnInit {
     //funny animation
     this.startAnimationCycle();
 
+    // 🎄 Start snow effect automatically
+    this.startNewYearAnimation();
 
     // check theme immediately
     this.themeService.checkTimeAndSetTheme();
@@ -275,12 +277,12 @@ export class NatiaComponent implements OnInit {
   // -------------------- Disco animation mapping --------------------
   private setAnimation(message: string): void {
     switch (message) {
-      case 'Morning': this.currentAnimation = 'assets/gif/morning.gif'; break;
+      case 'Morning': this.currentAnimation = 'assets/gif/christmas-dancing.gif'; break;
       case 'Evening': this.currentAnimation = 'assets/gif/evening.gif'; break;
       case 'Night': this.currentAnimation = 'assets/gif/night.gif'; break;
       case 'Afternoon': this.currentAnimation = 'assets/gif/afternoon.gif'; break;
       case 'birthday': this.currentAnimation = 'assets/gif/birthday.gif'; break;
-      case 'NatiasCpuOverload': this.currentAnimation = 'assets/gif/overthinking-problem.gif'; break;
+      case 'NatiasCpuOverload': this.currentAnimation = 'assets/gif/grinch-clap.gif'; break;
       case 'NatiasRamOverload': this.currentAnimation = 'assets/gif/cpu.gif'; break;
       case 'TemperatureProblem': this.currentAnimation = 'assets/gif/temperature.gif'; break;
       default: this.currentAnimation = '/animations/default.gif'; break;
@@ -301,6 +303,51 @@ export class NatiaComponent implements OnInit {
     const temp = parseFloat(this.temperatureInfo?.temperature || '0');
     // console.log('🌡️ Checking isHot, temp:', temp);
     return temp > 24;
+  }
+
+
+  // 🎄 Winter Snow Animation
+  startNewYearAnimation() {
+    const now = new Date();
+    const month = now.getMonth(); // 0 = January, 10 = November, 11 = December
+    const day = now.getDate();
+
+    // Active between November 25 and January 25
+    const isHoliday =
+      (month === 10 && day >= 18) ||   // November 25+
+      (month === 11) ||               // December
+      (month === 0 && day <= 30);     // January 1–25
+
+    if (!isHoliday) return;
+
+    this.newYearActive = true;
+    this.generateSnowflakes(100); // number of flakes (you can increase/decrease)
+    requestAnimationFrame(() => this.animateSnowflakes());
+  }
+
+  generateSnowflakes(count: number) {
+    this.snowflakes = Array.from({ length: count }).map((_, i) => ({
+      id: i,
+      x: Math.random() * window.innerWidth,
+      y: Math.random() * window.innerHeight,
+      size: 2 + Math.random() * 4,
+      speed: 0.5 + Math.random() * 1.5
+    }));
+  }
+
+  animateSnowflakes() {
+    if (!this.newYearActive) return;
+
+    this.snowflakes.forEach(flake => {
+      flake.y += flake.speed;
+      if (flake.y > window.innerHeight) {
+        flake.y = -flake.size;
+        flake.x = Math.random() * window.innerWidth;
+      }
+    });
+
+    this.cdr.detectChanges();
+    requestAnimationFrame(() => this.animateSnowflakes());
   }
 
   // Angular's trackBy function to optimize ngFor performance.
@@ -324,7 +371,9 @@ export class NatiaComponent implements OnInit {
     return emrTemp.Name;
   }
 
-
+  trackBySnowflake(index: number, flake: any): number {
+    return flake.id;
+  }
 
 
 

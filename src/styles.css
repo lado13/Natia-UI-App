@@ -1,3 +1,12 @@
+@charset "UTF-8";
+body {
+  background-image: url("../src/assets/svg/waves.svg");
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: left;
+  min-height: 100vh;
+}
+
 /* styles.scss */
 /* Default light/day background */
 .day-theme {
@@ -6,6 +15,7 @@
   background-repeat: no-repeat;
   background-position: left;
   min-height: 100vh;
+  transition: opacity 0.7s ease-in-out;
 }
 
 /* Night background */
@@ -16,6 +26,7 @@
   background-repeat: no-repeat;
   background-position: left;
   min-height: 100vh;
+  transition: opacity 0.7s ease-in-out;
 }
 
 /* styles.scss or component scss */
@@ -50,16 +61,39 @@
   border: none !important;
 }
 
-.day-theme .symbolRate {
-  background-color: #f3ffda !important;
-  color: #000000 !important;
-}
-
-.day-theme .emr-temp {
-  background-color: #f3ffda !important;
-  color: #000000 !important;
-}
-
 .day-theme .card-header {
   background-color: transparent !important;
+}
+
+/* Base video style */
+.bg-video {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  -o-object-fit: cover;
+     object-fit: cover;
+  pointer-events: none;
+  z-index: -1;
+  opacity: 0;
+  transition: opacity 0.7s ease-in-out;
+}
+
+/* When BODY has day-theme → show day video */
+.day-theme .day-video {
+  opacity: 1;
+}
+
+.day-theme .night-video {
+  opacity: 0;
+}
+
+/* When BODY has night-theme → show night video */
+.night-theme .day-video {
+  opacity: 0;
+}
+
+.night-theme .night-video {
+  opacity: 1;
 }/*# sourceMappingURL=styles.css.map */

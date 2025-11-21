@@ -1,0 +1,111 @@
+<div class="container-fluid p-4">
+
+  <!-- Loading / Error -->
+  <div *ngIf="loading" class="alert alert-info text-center py-2">
+    ⏳ Loading stream info...
+  </div>
+  <div *ngIf="error" class="alert alert-danger text-center py-2">
+    ❌ {{ error }}
+  </div>
+
+  <div class="row g-2">
+    <div *ngFor="let streamInfo of pagedStreams; trackBy: trackByStreamInfoIpPort" class="col-12">
+
+      <div class="container-fluid">
+
+        <!-- IP Header -->
+        <div class="card-header bg-dark text-white p-2 d-flex justify-content-between">
+          <span class="m-auto fs-6">{{ streamInfo?.ip }}</span>
+          <span>{{ streamInfo.bitrateKbps | number:'1.0-0' }} pkts |
+            {{ streamInfo?.bitrateMbps | number:'1.0-2' }} Mbps
+          </span>
+        </div>
+
+        <div class="row g-2">
+          <div *ngFor="let program of streamInfo?.programs; trackBy: trackByProgramId" class="col">
+
+            <div class="program-card">
+
+              <!-- Program Header -->
+              <div class="d-flex justify-content-between mb-1">
+                <span class="program-id small-text">Program {{ program?.programId }} (PMT: {{ program?.pmtPid }})</span>
+                <span class="badge small-text text-light"
+                  [ngClass]="program?.isProblematic ? 'bg-danger' : 'bg-success'">
+                  {{ program?.isProblematic ? 'PROBLEMATIC' : 'OK' }}
+                </span>
+              </div>
+
+              <!-- Streams -->
+              <ul class="list-group list-group-flush mb-1">
+                <li *ngFor="let stream of program?.streams; trackBy: trackByStreamPid"
+                  class="list-group-item d-flex justify-content-between p-1">
+                  <span class="text-light small-text">
+                    <strong>{{ stream?.isVideo ? 'VIDEO' : 'AUDIO' }}</strong> - {{ stream?.codec }}
+                  </span>
+                  <span class="small text-light small-text">
+                    PID: {{ stream?.pid }},
+                    Packets: {{ stream?.packetCount }},
+                    Lang: {{ stream?.language }}
+                  </span>
+                </li>
+              </ul>
+
+              <!-- Errors -->
+              <div *ngIf="program?.streamGlitchStatus?.errors?.length"
+                class="alert small-text alert-warning p-1 mb-1 rounded">
+                <strong>Errors:</strong>
+                <ul class="mb-0">
+                  <li *ngFor="let e of program?.streamGlitchStatus?.errors">{{ e }}</li>
+                </ul>
+              </div>
+
+              <!-- Warnings -->
+              <div *ngIf="program?.streamGlitchStatus?.warnings?.length" class="alert alert-secondary p-1 mb-0 rounded">
+                <strong>Warnings:</strong>
+                <ul class="mb-0">
+                  <li *ngFor="let w of program?.streamGlitchStatus?.warnings">{{ w }}</li>
+                </ul>
+              </div>
+
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Pagination -->
+  <div class="d-flex justify-content-center mt-3">
+    <nav>
+      <ul class="pagination pagination-sm">
+
+        <!-- Previous -->
+        <li class="page-item" [class.disabled]="page === 1">
+          <a class="page-link" (click)="prevPage()">
+            &lt;
+          </a>
+        </li>
+
+        <!-- Page Numbers -->
+        <li class="page-item" *ngFor="let p of [].constructor(totalPages); let i = index"
+          [class.active]="page === i + 1">
+          <a class="page-link" (click)="goToPage(i + 1)">
+            {{ i + 1 }}
+          </a>
+        </li>
+
+        <!-- Next -->
+        <li class="page-item" [class.disabled]="false">
+          <a class="page-link" (click)="nextPage()">
+            &gt;
+          </a>
+        </li>
+
+      </ul>
+    </nav>
+  </div>
+
+</div>

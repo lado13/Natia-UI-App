@@ -1,5 +1,23 @@
 <div class="container-fluid py-4 pt-1 p-4 ps-5 pb-3 pe-5">
 
+  <!-- 🎄 New Year / Christmas Animation -->
+  <div *ngIf="newYearActive" class="snow-container">
+    <div class="snowflake" *ngFor="let flake of snowflakes; trackBy: trackBySnowflake" [style.left.px]="flake.x"
+      [style.top.px]="flake.y" [style.width.px]="flake.size" [style.height.px]="flake.size"></div>
+  </div>
+
+
+  <!-- live video background-->
+  <!-- DAY video -->
+  <video class="bg-video day-video" autoplay muted loop playsinline>
+    <source src="assets/video/day-snow.mp4" type="video/mp4" />
+  </video>
+
+  <!-- NIGHT video -->
+  <video class="bg-video night-video" autoplay muted loop playsinline>
+    <source src="assets/video/dark-forest-winter.mp4" type="video/mp4" />
+  </video>
+
 
 
   <!-- 🌡️ Temperature Info -->
@@ -7,11 +25,13 @@
 
     <div class="d-flex justify-content-between align-items-center flex-wrap">
 
+      <a href="/system-streams" target="_blank">
+        <!-- ⏰ Watch (left side) -->
+        <div class="classic-watch shadow-sm rounded-3 px-3 py-1">
+          ⏰{{ currentTime | date:'HH:mm:ss' }}
+        </div>
+      </a>
 
-      <!-- ⏰ Watch (left side) -->
-      <div class="classic-watch shadow-sm rounded-3 px-3 py-1">
-        ⏰{{ currentTime | date:'HH:mm:ss' }}
-      </div>
 
 
 
@@ -38,6 +58,8 @@
     </div>
   </div>
 
+  <!-- christmas-tree -->
+  <img class="christmas-tree" src="assets/gif/kstr-kochstrasse.gif" alt="christmas-tree">
 
 
 
@@ -78,17 +100,17 @@
 
   <!-- Duck -->
   <div class="duck-container" *ngIf="currentAnimations === 'duck'">
-    <img src="assets/gif/duck2.gif" class="duck" alt="Duck" />
+    <img src="assets/gif/santa-claus-runing.gif" class="duck" alt="Duck" />
   </div>
 
   <!-- Bat -->
   <div class="bat-container" *ngIf="currentAnimations === 'bat'">
-    <img src="assets/gif/bat-paniki.gif" class="bat" alt="Bat" />
+    <img src="assets/gif/tree-christmas-tree.gif" class="bat" alt="Bat" />
   </div>
 
   <!-- Squad -->
   <div class="squad-container" *ngIf="currentAnimations === 'squad'">
-    <img src="assets/gif/sad-penguins.gif" class="squad" alt="Squad Team" />
+    <img src="assets/gif/merry-christmas-pengu.gif" class="squad" alt="Squad Team" />
   </div>
 
   <!-- Disco container -->
@@ -102,8 +124,8 @@
   <div *ngIf="robotSpeech" class="text-center mt-4 robot-container">
     <i class="fa-solid fa-message fa-bounce bell-icon"></i>
     <h5 class="p-3 rounded-3 d-inline-block">
-      <img class="robot-img" src="assets/gif/boolb-robot.gif" alt="happy-robot" width="100" height="100">
-      {{ robotSpeech }} 
+      <img class="robot-img" src="assets/gif/sports-sportsmanias.gif" alt="happy-robot" width="100" height="100">
+      {{ robotSpeech }}
     </h5>
   </div>
 
